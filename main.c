@@ -8,10 +8,10 @@ typedef enum {
 } PlayerStatus;
 
 typedef struct {
-    int ID;
+    char token;
     PlayerStatus status;
     int bombMax;
-    int currentBombLaunched;
+    int currentNumberOfBombsLaunched;
 } Player;
 
 typedef struct {
@@ -26,11 +26,17 @@ typedef struct {
     int columns;
     int rows;
     char ** tab;
-    Bomb ** bombList;
-    Player ** playerMap;
+    int nbBombsOnMap;
+    int nbPlayers;
+    Bomb * bombList; // Array of bombs launched, to be modified with each exploding bombs
+    Player * playerList; // Array of players in the game, do not remove any player. Modifies the PlayerStatus if needed.
 }Map;
 
-void removeBomb(Bomb *bomb, Bomb ** bombList){
+void removeBomb(Bomb *bomb, Bomb * bombList){
+
+};
+
+void launchBomb(int x, int y, Player * player){
 
 };
 
@@ -44,9 +50,18 @@ void explosion(Bomb *bomb, Map *map){
         if (i == map->columns || map->tab[Y][i] == 'X') {
             break;
         } else if (map->tab[Y][i] == 'B'){
-            explosion(&map->bombList[Y][i], &(*map));
-        } else if (map->tab[Y][i] == 'P'){
-            map->playerMap[Y][i].status = isDead;
+            for (int j = 0; j < map->nbBombsOnMap; j++){
+                if (map->bombList[j].x == i && map->bombList[j].y == Y ) {
+                    explosion(&map->bombList[j], &(*map));
+                    break;
+                }
+            }
+        } else if (map->tab[Y][i] == 'Player.token'){
+            for (int k = 0; k < map->nbPlayers; k++) {
+                if (map->tab[Y][i] == map->playerList[k].token) {
+                    map->playerList[k].status = isDead;
+                }
+            }
         }
         map->tab[Y][i] = 'F';
     }
@@ -55,9 +70,18 @@ void explosion(Bomb *bomb, Map *map){
         if (i < 0 || map->tab[Y][i] == 'X') {
             break;
         } else if (map->tab[Y][i] == 'B'){
-            explosion(&map->bombList[Y][i], &(*map));
-        } else if (map->tab[Y][i] == 'P'){
-            map->playerMap[Y][i].status = isDead;
+            for (int j = 0; j < map->nbBombsOnMap; j++){
+                if (map->bombList[j].x == i && map->bombList[j].y == Y ) {
+                    explosion(&map->bombList[j], &(*map));
+                    break;
+                }
+            }
+        } else if (map->tab[Y][i] == 'Player.token'){
+            for (int k = 0; k < map->nbPlayers; k++) {
+                if (map->tab[Y][i] == map->playerList[k].token) {
+                    map->playerList[k].status = isDead;
+                }
+            }
         }
         map->tab[Y][i] = 'F';
     }
@@ -66,9 +90,18 @@ void explosion(Bomb *bomb, Map *map){
         if (i < 0 || map->tab[i][X] == 'X') {
             break;
         } else if (map->tab[i][X] == 'B'){
-            explosion(&map->bombList[i][X], &(*map));
-        } else if (map->tab[i][X] == 'P'){
-            map->playerMap[i][X].status = isDead;
+            for (int j = 0; j < map->nbBombsOnMap; j++){
+                if (map->bombList[j].x == X && map->bombList[j].y == i ) {
+                    explosion(&map->bombList[j], &(*map));
+                    break;
+                }
+            }
+        } else if (map->tab[i][X] == 'Player.token'){
+            for (int k = 0; k < map->nbPlayers; k++) {
+                if (map->tab[i][X] == map->playerList[k].token) {
+                    map->playerList[k].status = isDead;
+                }
+            }
         }
         map->tab[i][X] = 'F';
     }
@@ -77,9 +110,18 @@ void explosion(Bomb *bomb, Map *map){
         if (i == map->rows || map->tab[i][X] == 'X') {
             break;
         } else if (map->tab[i][X] == 'B'){
-            explosion(&map->bombList[i][X], &(*map));
-        } else if (map->tab[i][X] == 'P'){
-            map->playerMap[i][X].status = isDead;
+            for (int j = 0; j < map->nbBombsOnMap; j++){
+                if (map->bombList[j].x == X && map->bombList[j].y == i ) {
+                    explosion(&map->bombList[j], &(*map));
+                    break;
+                }
+            }
+        } else if (map->tab[i][X] == 'Player.token'){
+            for (int k = 0; k < map->nbPlayers; k++) {
+                if (map->tab[i][X] == map->playerList[k].token) {
+                    map->playerList[k].status = isDead;
+                }
+            }
         }
         map->tab[i][X] = 'F';
     }
