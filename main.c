@@ -142,11 +142,17 @@ char **initialiseTab(int rows, int columns){
             if(i == 0 || i == rows - 1 || j == 0 || j == columns - 1){
                 tab[i][j] = 'x';
             }
-            else if(j%3 == 0 && i%2 == 0){
+            else if(j == 1 && i == 1 || i == rows - 2 && j == columns - 2){
+                tab[i][j] = 'p';
+            }
+            else if(j%2 == 0 && i%2 == 0){
                 tab[i][j] = 'x';
             }
-            else{
+            else if((i == 1 && j == 2) || (i == 2 && j == 1) || (i == rows-2 && j == columns-3) || (i == rows-3 && j == columns-2)){
                 tab[i][j] = ' ';
+            }
+            else{
+                tab[i][j] = 'm';
             }
         }
     }
@@ -166,8 +172,8 @@ char **initialiseTab(int rows, int columns){
 //}
 
 void afficherMap(char **tab){
-    int rows = 6;
-    int column = 10;
+    int rows = 9;
+    int column = 11;
 
     for (int i = 0; i < rows; ++i) {
 
@@ -175,6 +181,12 @@ void afficherMap(char **tab){
             if(tab[i][j] == 'x'){
 
                 wprintf(L"\x2593");
+            }
+            else if(tab[i][j] == 'p'){
+                wprintf(L"p");
+            }
+            else if(tab[i][j] == 'm'){
+                wprintf(L"\x2592");
             }
             else{
                 wprintf(L" ");
@@ -189,7 +201,7 @@ int main() {
     _setmode(_fileno(stdout), _O_U16TEXT);
 
 
-    char** tab = initialiseTab(6,10);
+    char** tab = initialiseTab(9,11);
 
     afficherMap(tab);
 
