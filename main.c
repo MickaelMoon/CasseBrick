@@ -1,12 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
-<<<<<<< Updated upstream
-=======
 #include <wchar.h>
 #include <fcntl.h>
 #include <locale.h>
 
->>>>>>> Stashed changes
+
 
 typedef enum {
     waiting = 0,
@@ -150,9 +148,6 @@ void explosion(Bomb * bomb, Map *map){
     }
 }
 
-<<<<<<< Updated upstream
-int main() {
-=======
 char **initialiseTab(int rows, int columns){
     char ** tab = malloc(sizeof(char *) * rows);
 
@@ -264,7 +259,6 @@ int main() {
 
     afficherMap(map->tab);
 
->>>>>>> Stashed changes
     return 0;
 }
 
