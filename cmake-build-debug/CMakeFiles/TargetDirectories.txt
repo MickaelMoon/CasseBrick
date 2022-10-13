@@ -1,3 +1,0 @@
-C:/CasseBrick/cmake-build-debug/CMakeFiles/CasseBrick.dir
-C:/CasseBrick/cmake-build-debug/CMakeFiles/edit_cache.dir
-C:/CasseBrick/cmake-build-debug/CMakeFiles/rebuild_cache.dir
