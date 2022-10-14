@@ -4,15 +4,15 @@
 #include <fcntl.h>
 #include <locale.h>
 
-
-
 typedef enum {
-    waiting = 0,
+    //waiting = 0,
     isDead = 0,
     isPlaying = 1,
 } PlayerStatus;
 
 typedef struct {
+    int x;
+    int y;
     int id;
     char token;
     PlayerStatus status;
@@ -48,18 +48,23 @@ void removeBomb(Bomb *bomb, Bomb * bombList, Map * map){
             break;
         }
     }
+    free(bomb);
     map->nbBombsOnMap--;
 };
 
-Bomb * initBomb(int x, int y, Player * player){
+Bomb * initBomb(Player * player){
     Bomb * bomb = malloc(sizeof(Bomb));
-    bomb->x = x;
-    bomb->y = y;
+    bomb->x = player->x;
+    bomb->y = player->y;
     bomb->player = *player;
     bomb->player.currentNumberOfBombsLaunched++;
 
     return bomb;
 };
+
+void poseBomb(Map * map, Player * player){
+    map->bombList[map->nbBombsOnMap] = initBomb(player);
+}
 
 void explosion(Bomb * bomb, Map *map){
     int X = bomb->x;
@@ -77,7 +82,7 @@ void explosion(Bomb * bomb, Map *map){
                     break;
                 }
             }
-        } else if (map->tab[Y][i] == 'P'){
+        } else if (map->tab[Y][i] == '1' || map->tab[Y][i] == '2' || map->tab[Y][i] == '3' || map->tab[Y][i] == '4'){
             for (int k = 0; k < map->nbPlayers; k++) {
                 if (map->tab[Y][i] == map->playerList[k]->token) {
                     map->playerList[k]->status = isDead;
@@ -158,13 +163,13 @@ char **initialiseTab(int rows, int columns){
     for (int i = 0; i < rows; ++i) {
         for (int j = 0; j < columns; ++j) {
             if(i == 0 || i == rows - 1 || j == 0 || j == columns - 1) {
-                tab[i][j] = 'x';
+                tab[i][j] = 'x' ;
             }
             else if(j%3 == 0 && i%2 == 0) {
-                tab[i][j] = 'x';
+                tab[i][j] = 'x' ;
             }
             else{
-                tab[i][j] = ' ';
+                tab[i][j] = ' ' ;
             }
         }
     }
@@ -172,43 +177,28 @@ char **initialiseTab(int rows, int columns){
     return tab;
 }
 
-//void afficherMap(Map *map){
-//
-//    for (int i = 0; i < map->rows; ++i) {
-//
-//        for (int j = 0; j < map->columns; ++j) {
-//            printf("%c", map->tab[i][j]);
-//        }
-//        printf("\n");
-//    }
-//}
-
-void afficherMap(char **tab){
-    int rows = 6;
-    int column = 10;
-    setlocale(LC_CTYPE, "");
-
-    for (int i = 0; i < rows; ++i) {
-
-        for (int j = 0; j < column; ++j) {
-            if(tab[i][j] == 'x'){
-                //wchar_t test = 0x2593;
-                //wprintf(L"%lc",test);
-                printf("X");
-            }
-            else{
-                //wprintf(L" ");
-                printf(" ");
-            }
-            //printf("%c", tab[i][j]);
+void afficherMap(Map * map){
+    // ajoute les bombes sur la map (gère le soucis où un joueur pose ou traverse une bombe, afin de n'afficher que le joueur)
+    for (int i = 0; i < map->nbBombsOnMap; i++){
+        int x = map->bombList[i]->x;
+        int y = map->bombList[i]->y;
+        if (map->tab[y][x] == ' '){
+            map->tab[y][x] = 'B';
         }
-        //wprintf(L"\n");
+    }
+
+    for (int i = 0; i < map->rows; i++) {
+        for (int j = 0; j < map->columns; j++) {
+            printf("%c",map->tab[i][j]);
+        }
         printf("\n");
     }
 }
 
 Player * initPlayer(int i){
     Player * player = malloc(sizeof (Player));
+    player->x = 0; // a updater dans la création de map
+    player->y = 0; // a updater dans la création de map
     player->id = i+1;
     player->token = player->id+'0';
     if (i == 0){
@@ -235,15 +225,30 @@ Map * initMap(int columns, int rows, int nbPlayer){
     for (int i = 0; i < nbPlayer; i++){
         playerList[i] = malloc(sizeof(Player));
         playerList[i] = initPlayer(i);
+        if (i == 0){
+            playerList[0]->x = 1;
+            playerList[0]->y = 1;
+            map->tab[1][1] = playerList[0]->token;
+        } else if (i == 1){
+            playerList[1]->x = columns-2;
+            playerList[1]->y = rows -2;
+            map->tab[rows-2][columns -2] = playerList[1]->token;
+        } else if (i == 2){
+            playerList[2]->x = columns-2;
+            playerList[2]->y = 1;
+            map->tab[rows-2][1] = playerList[2]->token;
+        } else if (i == 3){
+            playerList[3]->x = 1;
+            playerList[3]->y = rows -2;
+            map->tab[1][columns -2] = playerList[3]->token;
+        }
     }
     map->playerList = playerList;
-    map->tab = initialiseTab(rows,columns);
 
     return map;
 }
 
 int main() {
-    //_setmode(_fileno(stdout), _O_U16TEXT);
     int nbPlayer;
     int rows = 6;
     int columns = 10;
@@ -255,9 +260,18 @@ int main() {
 
     Map * map = initMap(columns,rows,nbPlayer);
 
-    //char** tab = initialiseTab(6,10);
-
-    afficherMap(map->tab);
+    int play = 0;
+    char action;
+    do{
+        system("clear");
+        afficherMap(map);
+        printf("%d\n",play);
+        printf("Do something, Player %c:\n",map->playerList[play]->token);
+        scanf("%c",&action);
+        while (getchar()!='\n');
+        printf("action: %c\n",action);
+        play++;
+    } while (play < 4);
 
     return 0;
 }
