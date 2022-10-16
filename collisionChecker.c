@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include "struct.h"
 
 
 int collisionChecker(Player * player, Map * map, char direction){
@@ -9,13 +10,13 @@ int collisionChecker(Player * player, Map * map, char direction){
     2 = bomb;
     Will have to implement items here <-----
     */
-    int x = player->x;
-    int y = player->y;
+    int j = player->x;
+    int i = player->y;
 
     switch (direction){
-        case 'n':
-            if (x == 0 || map->tab[x-1][y] != ' '){
-                if (map->tab[x-1][y] == 'B'){
+        case 'z':
+            if (i == 0 || map->tab[i-1][j] != ' '){
+                if (map->tab[i-1][j] == 'B'){
                     return 2;
                 } else {
                     return 1;
@@ -23,26 +24,26 @@ int collisionChecker(Player * player, Map * map, char direction){
             }
             break;
         case 's':
-            if (x == map->rows -1 || map->tab[x+1][y] != ' '){
-                if (map->tab[x+1][y] == 'B'){
+            if (i == map->rows -1 || map->tab[i+1][j] != ' '){
+                if (map->tab[i+1][j] == 'B'){
                     return 2;
                 } else {
                     return 1;
                 }
             }
             break;
-        case 'e':
-            if (y == map->columns-1 || map->tab[x][y+1] != ' '){
-                if (map->tab[x][y+1] == 'B'){
+        case 'd':
+            if (j == map->columns-1 || map->tab[i][j+1] != ' '){
+                if (map->tab[i][j+1] == 'B'){
                     return 2;
                 } else {
                     return 1;
                 }
             }
             break;
-        case 'o':
-            if (y == 0 || map->tab[x][y-1] != ' '){
-                if (map->tab[x][y-1] == 'B'){
+        case 'q':
+            if (j == 0 || map->tab[i][j-1] != ' '){
+                if (map->tab[i][j-1] == 'B'){
                     return 2;
                 } else {
                     return 1;
