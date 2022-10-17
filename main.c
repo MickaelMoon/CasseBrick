@@ -15,6 +15,7 @@ typedef struct {
     PlayerStatus status;
     int bombMax;
     int currentNumberOfBombsLaunched;
+
 } Player;
 
 typedef struct {
@@ -31,6 +32,7 @@ typedef struct {
     char ** tab;
     int nbBombsOnMap;
     int nbPlayers;
+    int bombMin;
     Bomb * bombList; // Array of bombs launched, to be modified with each exploding bombs
     Player * playerList; // Array of players in the game, do not remove any player. Modifies the PlayerStatus if needed.
 }Map;
@@ -171,6 +173,38 @@ char **initialiseTab(int rows, int columns){
 //    }
 //}
 
+void recupData(char* filePath){
+
+    FILE *f = fopen(filePath, "r");
+    int bombMin;
+    int colums;
+    int rows;
+    char ** tab;
+
+    char buffer[100] = {0};
+
+    if (f == NULL){
+        printf("Error at opening file config.txt");
+    }
+
+
+    bombMin = atoi(fgets(buffer, 99,f));
+
+
+//    while (fgets(buffer, 99,f) != NULL){
+//
+//        for (int i = 0; i < strlen(buffer); ++i) {
+//            if(strlen(buffer) > 3 && strlen(buffer) < 5 && buffer[i] >= '0' && buffer[i] <= '9'){
+//                printf("%c", buffer[i]);
+//            }
+//            else if(strlen(buffer) > 5 && buffer[i] >= 'a' && buffer[i] <= 'z'){
+//                printf("%c", buffer[i]);
+//            }
+//            //printf("%c", buffer[i]);
+//        }
+//    }
+}
+
 void afficherMap(char **tab){
     int rows = 9;
     int column = 11;
@@ -180,30 +214,32 @@ void afficherMap(char **tab){
         for (int j = 0; j < column; ++j) {
             if(tab[i][j] == 'x'){
 
-                wprintf(L"\x2593");
+                printf("x");
             }
             else if(tab[i][j] == 'p'){
-                wprintf(L"p");
+                printf("p");
             }
             else if(tab[i][j] == 'm'){
-                wprintf(L"\x2592");
+                printf("m");
             }
             else{
-                wprintf(L" ");
+                printf(" ");
             }
             //printf("%c", tab[i][j]);
         }
-        wprintf("\n");
+        printf("\n");
     }
 }
 
 int main() {
-    _setmode(_fileno(stdout), _O_U16TEXT);
 
 
-    char** tab = initialiseTab(9,11);
 
-    afficherMap(tab);
+//    char** tab = initialiseTab(9,11);
+//
+//    afficherMap(tab);
+
+    recupData("config.txt");
 
     return 0;
 }
