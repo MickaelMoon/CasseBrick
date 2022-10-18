@@ -28,10 +28,10 @@ void afficherMap(Map * map){
 void removeBomb(Bomb *bomb, Map * map){
     Bomb * bombList = *map->bombList;
     //Bomb * newBombList = malloc(sizeof(Bomb)*30);
-    for (int i = 0/*, j = 0*/; i < map->nbBombsOnMap; i++){
+    for (int i = 0, j = 0; i < map->nbBombsOnMap; i++){
         if (bomb->x == bombList[i].x && bomb->y == bombList[i].y ){
-            for (int j = i; j < map->nbBombsOnMap-1; j++){
-                bombList[j] = bombList[j+1];
+            for (int k = i; k < map->nbBombsOnMap-2; k++){
+                bombList[k] = bombList[k+1];
             }
             //break;
             //newBombList[j] = bombList[i];
@@ -45,7 +45,7 @@ void removeBomb(Bomb *bomb, Map * map){
 void explosion(Bomb * bomb, Map *map){
     int X = bomb->x;
     int Y = bomb ->y;
-    //removeBomb(bomb, map);
+    removeBomb(bomb, map);
     map->tab[Y][X] = 'F';
     // explosion to the right
     for (int i = X; i <= X+bomb->player.firePower; i++){

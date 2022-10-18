@@ -27,6 +27,7 @@ void poseBomb(Map * map, Player * player){
     if (bombAlreadyOnTheTile == 0){
         map->bombList[map->nbBombsOnMap] = initBomb(player);
         map->bombList[map->nbBombsOnMap]->id = map->nbBombsOnMap;
+        printf("x: %d, y: %d\n", map->bombList[map->nbBombsOnMap]->x, map->bombList[map->nbBombsOnMap]->y);
         map->nbBombsOnMap++;
     } else {
         printf("a bomb is already on this tile\n");
