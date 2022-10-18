@@ -41,6 +41,7 @@ typedef struct {
     int bombMin;
     int nbBombsOnMap;
     int nbPlayers;
+    int nbPlayerAlive;
     Bomb ** bombList; // Array of bombs launched, to be modified with each exploding bombs
     Player ** playerList; // Array of players in the game, do not remove any player. Modifies the PlayerStatus if needed.
 } Map;

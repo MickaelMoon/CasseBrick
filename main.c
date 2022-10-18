@@ -23,22 +23,29 @@ int main() {
 
    Map * map = initMap(nbPlayer);
 
-   int play = 0;
    char action;
 
    //system("clear");
+   int turn = 0;
    afficherMap(map);
-   do{
-       printf("nb Bomb on field: %d\n", map->nbBombsOnMap);
+    Player * currentPlayer;
 
-       printf("Do something, Player %c:\n",map->playerList[play%nbPlayer]->token);
+   do{
+       if (map->playerList[turn%nbPlayer]->status == isDead){
+        turn++;
+       } else {
+        currentPlayer = map->playerList[turn%nbPlayer];
+        printf("nb Bomb on field: %d\n", map->nbBombsOnMap);
+
+       printf("Do something, Player %c:\n",currentPlayer->token);
        scanf(" %c",&action);
-       keyHandler(action, map, map->playerList[play%nbPlayer]);
-       updateTimerBomb(map, map->playerList[play%nbPlayer]);
+       keyHandler(action, map, currentPlayer);
+       updateTimerBomb(map, currentPlayer);
        //system("clear");
        afficherMap(map);
-       play++;
-   } while (play < 200);
+       turn++;
+       }
+   } while (map->nbPlayerAlive > 1);
 
     return 0;
 }

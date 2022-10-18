@@ -52,15 +52,20 @@ Player * initPlayer(int i){
     player->y = 0; // a updater dans la création de map
     player->id = i+1;
     player->token = player->id+'0';
-    if (i == 0){
+    player->status = isPlaying;
+    /*if (i == 0){
         player->status = isPlaying;
     } else {
         player->status = waiting;
-    }
+    }*/
     player->bombMax = 1;
     player->currentNumberOfBombsLaunched = 0;
-    player->bombKick = 1;
+    player->bombKick = 0;
     player->firePower = 2;
+    player->passBombs = 1;
+    player->invincibilityTime = 0;
+    player->heart = 0; //Max 1 per map
+    player->life = 0; //No limit
 
     return player;
 }
@@ -135,7 +140,11 @@ Map * initMap(int nbPlayer){
     map->tab = recupData("map.txt", map);
     map->nbBombsOnMap = 0;
     map->nbPlayers = nbPlayer;
+    map->nbPlayerAlive = nbPlayer;
     Bomb ** bombList = malloc(sizeof(Bomb*)*40); //Max 40 bombs at the same time on map
+    for (int i = 0; i < 40; i++){
+        bombList[i] = malloc(sizeof(Bomb));
+    }
     map->bombList = bombList;
     Player ** playerList = malloc(sizeof(Player*)*nbPlayer);
     for (int i = 0; i < nbPlayer; i++){
@@ -166,14 +175,22 @@ Map * initMap(int nbPlayer){
 
 void updateTimerBomb(Map * map, Player * player){
     for (int i = 0; i < map->nbBombsOnMap; i++){
+        if (map->bombList[i]->player.token == player->token){ //timer updated only for the bombs dropped by the current player
+            int bombIsInactive = 0;
+            for (int j = 0; j < map->nbPlayers; j++){
+                // check playerList to see if a player is on the current bomb checked, if yes bomb timer is disable temporary
+                if (map->playerList[j]->x == map->bombList[i]->x && map->playerList[j]->y == map->bombList[i]->y){
+                    bombIsInactive = 1;
+                }
+            }
+            if (bombIsInactive == 0){
+                map->bombList[i]->timer--;
+            }
+        };
         if (map->bombList[i]->timer == 0){
-            map->bombList[i]->timer--;
             explosion(map->bombList[i], map);
         }
-        if (map->bombList[i]->player.token == player->token){
-            map->bombList[i]->timer--;
-        };
-        printf("Bombe %d, joueur %c, timer %d\n", map->bombList[i]->id,map->bombList[i]->player.token, map->bombList[i]->timer);
+        //printf("Bombe %d, joueur %c, timer %d\n", map->bombList[i]->id,map->bombList[i]->player.token, map->bombList[i]->timer);
     }
 
 }

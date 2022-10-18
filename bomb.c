@@ -3,26 +3,34 @@
 #include "map.h"
 
 void removeBomb(Bomb *bomb, Map * map){
-    Bomb * bombList = *map->bombList;
-    //Bomb * newBombList = malloc(sizeof(Bomb)*30);
-    for (int i = 0, j = 0; i < map->nbBombsOnMap; i++){
-        if (bomb->x == bombList[i].x && bomb->y == bombList[i].y ){
-            for (int k = i; k < map->nbBombsOnMap-2; k++){
-                bombList[k] = bombList[k+1];
+    //printf("Removed Bomb: %d\n",bomb->id);
+    for (int i = 0; i < map->nbBombsOnMap; i++){
+        if (bomb == map->bombList[i]){
+            //printf("bomb reconnized: n°%d, value: %p\n", i, map->bombList[i]);
+            for (int k = i; k < map->nbBombsOnMap-1; k++){
+                //printf("bomb k:%p, bomb k+1: %p\n", map->bombList[k], map->bombList[k+1]);
+                Bomb * temp = map->bombList[k];
+                map->bombList[k] = map->bombList[k+1];
+                map->bombList[k+1] = temp;
+                //printf("Edit: bomb k:%p, bomb k+1: %p\n", map->bombList[k], map->bombList[k+1]);
             }
-            //break;
-            //newBombList[j] = bombList[i];
-            //j++;
+            map->nbBombsOnMap--;
+            map->bombList[map->nbBombsOnMap] = NULL;
+            break;
         }
     }
-    map->nbBombsOnMap--;
+    printf("updated bombList:\n");
+    for(int i = 0; i < map->nbBombsOnMap; i++ ){
+        printf("Bombe %d, joueur %c, timer %d\n", map->bombList[i]->id,map->bombList[i]->player.token, map->bombList[i]->timer);
+    }
+    //map->nbBombsOnMap--;
     //map->bombList = &newBombList;
 }
 
 void explosion(Bomb * bomb, Map *map){
     int X = bomb->x;
     int Y = bomb ->y;
-    //removeBomb(bomb, map);
+    removeBomb(bomb, map);
     map->tab[Y][X] = 'F';
     // explosion to the right
     for (int i = X; i <= X+bomb->player.firePower; i++){
@@ -39,6 +47,7 @@ void explosion(Bomb * bomb, Map *map){
             for (int k = 0; k < map->nbPlayers; k++) {
                 if (map->tab[Y][i] == map->playerList[k]->token) {
                     map->playerList[k]->status = isDead;
+                    map->nbPlayerAlive--;
                 }
             }
         } else if (map->tab[Y][i] == 'm'){
@@ -62,6 +71,7 @@ void explosion(Bomb * bomb, Map *map){
             for (int k = 0; k < map->nbPlayers; k++) {
                 if (map->tab[Y][i] == map->playerList[k]->token) {
                     map->playerList[k]->status = isDead;
+                    map->nbPlayerAlive--;
                 }
             }
         } else if (map->tab[Y][i] == 'm'){
@@ -85,6 +95,7 @@ void explosion(Bomb * bomb, Map *map){
             for (int k = 0; k < map->nbPlayers; k++) {
                 if (map->tab[i][X] == map->playerList[k]->token) {
                     map->playerList[k]->status = isDead;
+                    map->nbPlayerAlive--;
                 }
             }
         } else if (map->tab[i][X] == 'm'){
@@ -108,6 +119,7 @@ void explosion(Bomb * bomb, Map *map){
             for (int k = 0; k < map->nbPlayers; k++) {
                 if (map->tab[i][X] == map->playerList[k]->token) {
                     map->playerList[k]->status = isDead;
+                    map->nbPlayerAlive--;
                 }
             }
         } else if (map->tab[i][X] == 'm'){
