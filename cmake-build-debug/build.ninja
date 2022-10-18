@@ -57,6 +57,22 @@ build CMakeFiles/CasseBrick.dir/main.c.obj: C_COMPILER__CasseBrick_Debug C$:/Cas
   TARGET_COMPILE_PDB = CMakeFiles\CasseBrick.dir\
   TARGET_PDB = CasseBrick.pdb
 
+build CMakeFiles/CasseBrick.dir/keyboardHandler.c.obj: C_COMPILER__CasseBrick_Debug C$:/CasseBrick/keyboardHandler.c || cmake_object_order_depends_target_CasseBrick
+  DEP_FILE = CMakeFiles\CasseBrick.dir\keyboardHandler.c.obj.d
+  FLAGS = -g -std=gnu99
+  OBJECT_DIR = CMakeFiles\CasseBrick.dir
+  OBJECT_FILE_DIR = CMakeFiles\CasseBrick.dir
+  TARGET_COMPILE_PDB = CMakeFiles\CasseBrick.dir\
+  TARGET_PDB = CasseBrick.pdb
+
+build CMakeFiles/CasseBrick.dir/collisionChecker.c.obj: C_COMPILER__CasseBrick_Debug C$:/CasseBrick/collisionChecker.c || cmake_object_order_depends_target_CasseBrick
+  DEP_FILE = CMakeFiles\CasseBrick.dir\collisionChecker.c.obj.d
+  FLAGS = -g -std=gnu99
+  OBJECT_DIR = CMakeFiles\CasseBrick.dir
+  OBJECT_FILE_DIR = CMakeFiles\CasseBrick.dir
+  TARGET_COMPILE_PDB = CMakeFiles\CasseBrick.dir\
+  TARGET_PDB = CasseBrick.pdb
+
 
 # =============================================================================
 # Link build statements for EXECUTABLE target CasseBrick
@@ -65,7 +81,7 @@ build CMakeFiles/CasseBrick.dir/main.c.obj: C_COMPILER__CasseBrick_Debug C$:/Cas
 #############################################
 # Link the executable CasseBrick.exe
 
-build CasseBrick.exe: C_EXECUTABLE_LINKER__CasseBrick_Debug CMakeFiles/CasseBrick.dir/main.c.obj
+build CasseBrick.exe: C_EXECUTABLE_LINKER__CasseBrick_Debug CMakeFiles/CasseBrick.dir/main.c.obj CMakeFiles/CasseBrick.dir/keyboardHandler.c.obj CMakeFiles/CasseBrick.dir/collisionChecker.c.obj
   FLAGS = -g
   LINK_LIBRARIES = -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32
   OBJECT_DIR = CMakeFiles\CasseBrick.dir
