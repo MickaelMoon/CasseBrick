@@ -45,7 +45,7 @@ void removeBomb(Bomb *bomb, Map * map){
 void explosion(Bomb * bomb, Map *map){
     int X = bomb->x;
     int Y = bomb ->y;
-    //removeBomb(bomb, map);
+    removeBomb(bomb, map);
     map->tab[Y][X] = 'F';
     // explosion to the right
     for (int i = X; i <= X+bomb->player.firePower; i++){
@@ -164,7 +164,7 @@ char **initialiseTab(int rows, int columns){
             if(i == 0 || i == rows - 1 || j == 0 || j == columns - 1) {
                 tab[i][j] = 'x' ;
             }
-            else if(j%2 == 0 && i%2 == 0) {
+            else if(j%3 == 0 && i%2 == 0) {
                 tab[i][j] = 'x' ;
             }
             else{
@@ -196,74 +196,11 @@ Player * initPlayer(int i){
     return player;
 }
 
-char ** recupData(char *filepath, Map * map){
-    FILE *f = fopen(filepath, "r");
-
-    char buffer[100] = {0};
-
-    if (f == NULL){
-        printf("Error at opening file config.txt");
-    }
-
-    map->bombMin = atoi(fgets(buffer, 29,f));
-
-    fgets(buffer, 29, f);
-    int index = 0;
-    int i = 0;
-    char ro[3];
-    char co[3];
-
-    while (buffer[index] != ' ' && buffer[index] != '\0'){
-        co[i] = buffer[index];
-        i++;
-        index++;
-    }
-    i = 0;
-    index++;
-    while (buffer[index] != ' ' && buffer[index] != '\0'){
-        ro[i] = buffer[index];
-        i++;
-        index++;
-    }
-    map->rows = atoi(ro);
-    map->columns = atoi(co);
-    // Initialize the Array with new loaded rows & columns
-    char ** tab = malloc(sizeof(char *) * map->rows);
-
-    for (int i = 0; i < map->rows; ++i) {
-        tab[i] = malloc(sizeof(char)* map->columns);
-    }
-
-    char c = fgetc(f);
-    int k = 0;
-    int j = 0;
-    while (c != EOF){
-        if (j == map->columns){
-            j = j % map->columns;
-            k++;
-        }
-        if (c != '\n'){
-            tab[k][j] = c;
-            j++;
-        }
-        c = fgetc(f);
-    }
-
-    /*for (int k = 0; k < map->rows; k++){
-        for (int j = 0; j < map->columns; j++){
-            printf("%c",tab[k][j]);
-        }
-        printf("\n");
-    }*/
-
-    return tab;
-}
-
-Map * initMap(int nbPlayer){
+Map * initMap(int columns, int rows, int nbPlayer){
     Map * map = malloc(sizeof(Map));
-    map->columns;
-    map->rows;
-    map->tab = recupData("map.txt", map);
+    map->columns = columns;
+    map->rows = rows;
+    map->tab = initialiseTab(rows,columns);
     map->nbBombsOnMap = 0;
     map->nbPlayers = nbPlayer;
     Bomb ** bombList = malloc(sizeof(Bomb*)*40); //Max 40 bombs at the same time on map
@@ -277,17 +214,17 @@ Map * initMap(int nbPlayer){
             playerList[0]->y = 1;
             map->tab[1][1] = playerList[0]->token;
         } else if (i == 1){
-            playerList[1]->x = map->columns-2;
-            playerList[1]->y = map->rows -2;
-            map->tab[map->rows-2][map->columns -2] = playerList[1]->token;
+            playerList[1]->x = columns-2;
+            playerList[1]->y = rows -2;
+            map->tab[rows-2][columns -2] = playerList[1]->token;
         } else if (i == 2){
-            playerList[2]->x = map->columns-2;
+            playerList[2]->x = columns-2;
             playerList[2]->y = 1;
-            map->tab[1][map->columns-2] = playerList[2]->token;
+            map->tab[1][columns-2] = playerList[2]->token;
         } else if (i == 3){
             playerList[3]->x = 1;
-            playerList[3]->y = map->rows -2;
-            map->tab[map->rows-2][1] = playerList[3]->token;
+            playerList[3]->y = rows -2;
+            map->tab[rows-2][1] = playerList[3]->token;
         }
     }
     map->playerList = playerList;
@@ -309,33 +246,35 @@ void updateTimerBomb(Map * map, Player * player){
 
 }
 
+
 int main() {
     int nbPlayer;
+    int rows = 6;
+    int columns = 10;
 
-    //recupData("map2.txt");
-   do{
-       printf("How Many players will play ? (2-4)\n");
-       scanf("%d", &nbPlayer);
-   } while (nbPlayer != 2 && nbPlayer != 3 && nbPlayer != 4);
+    do{
+        printf("How Many players will play ? (2-4)\n");
+        scanf("%d", &nbPlayer);
+    } while (nbPlayer != 2 && nbPlayer != 3 && nbPlayer != 4);
 
-   Map * map = initMap(nbPlayer);
+    Map * map = initMap(columns,rows,nbPlayer);
 
-   int play = 0;
-   char action;
+    int play = 0;
+    char action;
 
-   //system("clear");
-   afficherMap(map);
-   do{
-       printf("nb Bomb on field: %d\n", map->nbBombsOnMap);
+    //system("clear");
+    afficherMap(map);
+    do{
+        printf("nb Bomb on field: %d\n", map->nbBombsOnMap);
 
-       printf("Do something, Player %c:\n",map->playerList[play%nbPlayer]->token);
-       scanf(" %c",&action);
-       keyHandler(action, map, map->playerList[play%nbPlayer]);
-       updateTimerBomb(map, map->playerList[play%nbPlayer]);
-       //system("clear");
-       afficherMap(map);
-       play++;
-   } while (play < 200);
+        printf("Do something, Player %c:\n",map->playerList[play%nbPlayer]->token);
+        scanf(" %c",&action);
+        keyHandler(action, map, map->playerList[play%nbPlayer]);
+        updateTimerBomb(map, map->playerList[play%nbPlayer]);
+        //system("clear");
+        afficherMap(map);
+        play++;
+    } while (play < 200);
 
     return 0;
 }

@@ -38,6 +38,7 @@ typedef struct {
     int columns;
     int rows;
     char ** tab;
+    int bombMin;
     int nbBombsOnMap;
     int nbPlayers;
     Bomb ** bombList; // Array of bombs launched, to be modified with each exploding bombs
