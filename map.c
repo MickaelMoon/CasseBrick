@@ -123,13 +123,6 @@ char ** recupData(char *filepath, Map * map){
         c = fgetc(f);
     }
 
-    /*for (int k = 0; k < map->rows; k++){
-        for (int j = 0; j < map->columns; j++){
-            printf("%c",tab[k][j]);
-        }
-        printf("\n");
-    }*/
-
     return tab;
 }
 
@@ -137,7 +130,7 @@ Map * initMap(int nbPlayer){
     Map * map = malloc(sizeof(Map));
     map->columns;
     map->rows;
-    map->tab = recupData("map.txt", map);
+    map->tab = recupData("map2.txt", map);
     map->nbBombsOnMap = 0;
     map->nbPlayers = nbPlayer;
     map->nbPlayerAlive = nbPlayer;
@@ -190,7 +183,6 @@ void updateTimerBomb(Map * map, Player * player){
         if (map->bombList[i]->timer == 0){
             explosion(map->bombList[i], map);
         }
-        //printf("Bombe %d, joueur %c, timer %d\n", map->bombList[i]->id,map->bombList[i]->player.token, map->bombList[i]->timer);
     }
 
 }

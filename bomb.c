@@ -3,19 +3,15 @@
 #include "map.h"
 
 void removeBomb(Bomb *bomb, Map * map){
-    //printf("Removed Bomb: %d\n",bomb->id);
     for (int i = 0; i < map->nbBombsOnMap; i++){
-        if (bomb == map->bombList[i]){
-            //printf("bomb reconnized: n°%d, value: %p\n", i, map->bombList[i]);
-            for (int k = i; k < map->nbBombsOnMap-1; k++){
-                //printf("bomb k:%p, bomb k+1: %p\n", map->bombList[k], map->bombList[k+1]);
+        if (bomb == map->bombList[i]){ //get the index of the exploding bomb
+            for (int k = i; k < map->nbBombsOnMap-1; k++){ //put the exploded bomb at the end of the array
                 Bomb * temp = map->bombList[k];
                 map->bombList[k] = map->bombList[k+1];
                 map->bombList[k+1] = temp;
-                //printf("Edit: bomb k:%p, bomb k+1: %p\n", map->bombList[k], map->bombList[k+1]);
             }
             map->nbBombsOnMap--;
-            map->bombList[map->nbBombsOnMap] = NULL;
+            map->bombList[map->nbBombsOnMap] = NULL; //remove the exploded bomb from the array
             break;
         }
     }
@@ -23,8 +19,6 @@ void removeBomb(Bomb *bomb, Map * map){
     for(int i = 0; i < map->nbBombsOnMap; i++ ){
         printf("Bombe %d, joueur %c, timer %d\n", map->bombList[i]->id,map->bombList[i]->player.token, map->bombList[i]->timer);
     }
-    //map->nbBombsOnMap--;
-    //map->bombList = &newBombList;
 }
 
 void explosion(Bomb * bomb, Map *map){
@@ -33,8 +27,11 @@ void explosion(Bomb * bomb, Map *map){
     removeBomb(bomb, map);
     map->tab[Y][X] = 'F';
     // explosion to the right
-    for (int i = X; i <= X+bomb->player.firePower; i++){
-        if (i == map->columns || map->tab[Y][i] == 'x') {
+    for (int i = X, k = 0; k <= bomb->player.firePower; i++, k++){
+        if (i == map->columns){
+            i = 0;
+        }
+        if (map->tab[Y][i] == 'x') {
             break;
         } else if (map->tab[Y][i] == 'B'){
             for (int j = 0; j < map->nbBombsOnMap; j++){
@@ -57,8 +54,11 @@ void explosion(Bomb * bomb, Map *map){
         map->tab[Y][i] = 'F';
     }
     // explosion to the left
-    for (int i = X; i >= X-bomb->player.firePower; i--){
-        if (i < 0 || map->tab[Y][i] == 'x') {
+    for (int i = X, k = 0; k <= bomb->player.firePower; i--, k++){
+        if (i < 0){
+            i = map->columns-1;
+        }
+        if (map->tab[Y][i] == 'x') {
             break;
         } else if (map->tab[Y][i] == 'B'){
             for (int j = 0; j < map->nbBombsOnMap; j++){
@@ -81,11 +81,14 @@ void explosion(Bomb * bomb, Map *map){
         map->tab[Y][i] = 'F';
     }
     // explosion to the top
-    for (int i = Y; i >= Y-bomb->player.firePower; i--){
-        if (i < 0 || map->tab[i][X] == 'x') {
+    for (int i = Y, k = 0; k < bomb->player.firePower; i--, k++){
+        if (i < 0){
+            i = map->rows-1;
+        }
+        if (map->tab[i][X] == 'x') {
             break;
         } else if (map->tab[i][X] == 'B'){
-            for (int j = 0; j < map->nbBombsOnMap; j++){
+            for (int j = 0; j <= map->nbBombsOnMap; j++){
                 if (map->bombList[j]->x == X && map->bombList[j]->y == i ) {
                     explosion(map->bombList[j], &(*map));
                     break;
@@ -105,11 +108,14 @@ void explosion(Bomb * bomb, Map *map){
         map->tab[i][X] = 'F';
     }
     // explosion to the bottom
-    for (int i = Y; i <= Y+bomb->player.firePower; i++){
-        if (i == map->rows || map->tab[i][X] == 'x') {
+    for (int i = Y, k = 0; k < bomb->player.firePower; i++, k++){
+        if (i == map->rows){
+            i = 0;
+        }
+        if (map->tab[i][X] == 'x') {
             break;
         } else if (map->tab[i][X] == 'B'){
-            for (int j = 0; j < map->nbBombsOnMap; j++){
+            for (int j = 0; j <= map->nbBombsOnMap; j++){
                 if (map->bombList[j]->x == X && map->bombList[j]->y == i ) {
                     explosion(map->bombList[j], &(*map));
                     break;

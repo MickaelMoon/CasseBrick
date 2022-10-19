@@ -12,26 +12,46 @@ void move (char c, Map * map, Player * player){
     switch(c){
         case 'z':
             map->tab[i][j] = ' ';
-            map->tab[i-1][j] = player->token;
-            player->y = i-1;
+            if (i == 0){
+                i = map->rows-1;
+            } else {
+                i-=1;
+            }
+            map->tab[i][j] = player->token;
+            player->y = i;
             //printf("Nord\n");
             break;
         case 's':
             map->tab[i][j] = ' ';
-            map->tab[i+1][j] = player->token;
-            player->y = i+1;
+            if (i == map->rows-1){
+                i = 0;
+            } else {
+                i+=1;
+            }
+            map->tab[i][j] = player->token;
+            player->y = i;
             //printf("Sud\n");
             break;
         case 'd':
             map->tab[i][j] = ' ';
-            map->tab[i][j+1] = player->token;
-            player->x = j+1;
+            if (j == map->columns-1){
+                j = 0;
+            } else {
+                j+=1;
+            }
+            map->tab[i][j] = player->token;
+            player->x = j;
             //printf("Est\n");
             break;
         case 'q':
             map->tab[i][j] = ' ';
-            map->tab[i][j-1] = player->token;
-            player->x = j-1;
+            if (j == 0){
+                j = map->columns-1;
+            } else {
+                j-=1;
+            }
+            map->tab[i][j] = player->token;
+            player->x = j;
             //printf("Ouest\n");
             break;
     }
@@ -145,11 +165,12 @@ void keyHandler(char c, Map * map, Player * player) {
                 kickBomb(c,map,player);
             }
         }
+        printf("keyHandler, collisionCheckerValue %d\n",collision);
     } else if (c == 'w'){ // Player want to pass (w-WAIT)
         //wait(c, map, player);
     } else if (c == 'b'){// Player want to pose a bomb
         poseBomb(map, player);
     } else {
-        printf("Invalid Key pressed\n choose between the following actions:\n Move: n (NORTH), s (SOUTH), e (EAST), o (WEST);\n Action: w (WAIT), b (BOMB);\n");
+        printf("Invalid Key pressed\n choose between the following actions:\n Move: z (NORTH), s (SOUTH), d (EAST), q (WEST);\n Action: w (WAIT), b (BOMB);\n");
     }
 }
