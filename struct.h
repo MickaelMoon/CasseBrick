@@ -27,7 +27,7 @@ typedef struct {
 
 typedef struct {
     int id;
-    Player player;
+    Player * player;
     int turnRemainingBeforeExploding;
     int x;
     int y;

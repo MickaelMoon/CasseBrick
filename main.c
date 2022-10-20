@@ -15,7 +15,6 @@
 int main() {
     int nbPlayer;
 
-    //recupData("map2.txt");
    do{
        printf("How Many players will play ? (2-4)\n");
        scanf("%d", &nbPlayer);
@@ -25,7 +24,7 @@ int main() {
 
    char action;
 
-   //system("clear");
+   system("clear");
    int turn = 0;
    afficherMap(map);
     Player * currentPlayer;
@@ -35,15 +34,19 @@ int main() {
         turn++;
        } else {
         currentPlayer = map->playerList[turn%nbPlayer];
-        printf("nb Bomb on field: %d\n", map->nbBombsOnMap);
+        //printf("nb Bomb on field: %d\n", map->nbBombsOnMap);
+        printf("\nPlayer %c status:\nMax bomb: %d / Fire Pwr: %d\nPasseBomb: %d / BombKick: %d\nInvincibility: %d turn(s)\nHeart Shield: %d / Life(s): %d\n", currentPlayer->token, currentPlayer->bombMax, currentPlayer->firePower, currentPlayer->passBombs, currentPlayer->bombKick, currentPlayer->invincibilityTime, currentPlayer->heart, currentPlayer->life);
 
-       printf("Do something, Player %c:\n",currentPlayer->token);
+       printf("\nDo something, Player %c:\n",currentPlayer->token);
        scanf(" %c",&action);
        keyHandler(action, map, currentPlayer);
        updateTimerBomb(map, currentPlayer);
-       //system("clear");
+       system("clear");
        afficherMap(map);
        turn++;
+       if (currentPlayer->invincibilityTime != 0){
+         currentPlayer->invincibilityTime--;
+       }
        }
    } while (map->nbPlayerAlive > 1);
 

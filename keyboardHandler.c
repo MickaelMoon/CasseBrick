@@ -66,25 +66,25 @@ void kickBomb (char c, Map * map, Player * player){
     switch(c){
         case 'z':
             i=i-1; //bomb is 1 tile up to player
-            while (map->tab[i-decallage][j] == ' '){
+            while (map->tab[(i-decallage+map->rows)%map->rows][j] == ' '){
                 decallage++;
             }
             break;
         case 's':
             i=i+1; //bomb is 1 tile down to player
-            while (map->tab[i+decallage][j] == ' '){
+            while (map->tab[(i+decallage)%map->rows][j] == ' '){
                 decallage++;
             }
             break;
         case 'd':
             j=j+1; //bomb is 1 tile right to player
-            while (map->tab[i][j+decallage] == ' '){
+            while (map->tab[i][(j+decallage)%map->columns] == ' '){
                 decallage++;
             }
             break;
         case 'q':
             j=j-1; //bomb is 1 tile left to player
-            while (map->tab[i][j-decallage] == ' '){
+            while (map->tab[i][(j-decallage+map->columns)%map->columns] == ' '){
                 decallage++;
             }
             break;
@@ -99,23 +99,23 @@ void kickBomb (char c, Map * map, Player * player){
     switch(c){
         case 'z':
             map->tab[i][j] = ' '; // initial bomb position cleared
-            map->tab[i-(decallage-1)][j] = 'B'; //bomb new position (-1 because decallage initialized at 1)
-            //bomb->y = i-(decallage-1); //bomb item updated
+            map->tab[(i-(decallage-1)+map->rows)%map->rows][j] = 'B'; //bomb new position (-1 because decallage initialized at 1)
+            bomb->y = (i-(decallage-1)+map->rows)%map->rows; //bomb item updated
             break;
         case 's':
             map->tab[i][j] = ' '; // initial bomb position cleared
-            map->tab[i+(decallage-1)][j] = 'B'; //bomb new position (-1 because decallage initialized at 1)
-            bomb->y = i+(decallage-1); //bomb item updated
+            map->tab[(i+(decallage-1))%map->rows][j] = 'B'; //bomb new position (-1 because decallage initialized at 1)
+            bomb->y = (i+(decallage-1))%map->rows; //bomb item updated
             break;
         case 'd':
             map->tab[i][j] = ' '; // initial bomb position cleared
-            map->tab[i][j+(decallage-1)] = 'B'; //bomb new position (-1 because decallage initialized at 1)
-            bomb->x = j+(decallage-1); //bomb item updated
+            map->tab[i][(j+(decallage-1))%map->columns] = 'B'; //bomb new position (-1 because decallage initialized at 1)
+            bomb->x = (j+(decallage-1))%map->columns; //bomb item updated
             break;
         case 'q':
             map->tab[i][j] = ' '; // initial bomb position cleared
-            map->tab[i][j-(decallage-1)] = 'B'; //bomb new position (-1 because decallage initialized at 1)
-            bomb->x = j-(decallage-1); //bomb item updated
+            map->tab[i][(j-(decallage-1)+map->columns)%map->columns] = 'B'; //bomb new position (-1 because decallage initialized at 1)
+            bomb->x = (j-(decallage-1)+map->columns)%map->columns; //bomb item updated
             break;
     }
 }
@@ -124,30 +124,38 @@ Bomb * initBomb(Player * player){
     Bomb * bomb = malloc(sizeof(Bomb));
     bomb->x = player->x;
     bomb->y = player->y;
-    bomb->player = *player;
-    bomb->player.currentNumberOfBombsLaunched++;
-    bomb->timer = 4;
+    bomb->player = player;
+    bomb->player->currentNumberOfBombsLaunched++;
+    bomb->timer = 3;
 
     return bomb;
 };
 
 void poseBomb(Map * map, Player * player){
-    int bombAlreadyOnTheTile = 0;
-    for (int i = 0; i < map->nbBombsOnMap; i++){
-        int x = map->bombList[i]->x;
-        int y = map->bombList[i]->y;
-        if (x == player->x && y == player->y){
-            bombAlreadyOnTheTile = 1;
+    printf("nbBombLaunched: %d\n",player->currentNumberOfBombsLaunched);
+
+    if (player->currentNumberOfBombsLaunched < player->bombMax){
+        int bombAlreadyOnTheTile = 0;
+        for (int i = 0; i < map->nbBombsOnMap; i++){
+            int x = map->bombList[i]->x;
+            int y = map->bombList[i]->y;
+            if (x == player->x && y == player->y){
+                bombAlreadyOnTheTile = 1;
+            }
         }
-    }
-    if (bombAlreadyOnTheTile == 0){
-        map->bombList[map->nbBombsOnMap] = initBomb(player);
-        map->bombList[map->nbBombsOnMap]->id = map->nbBombsOnMap;
-        printf("x: %d, y: %d\n", map->bombList[map->nbBombsOnMap]->x, map->bombList[map->nbBombsOnMap]->y);
-        map->nbBombsOnMap++;
+        if (bombAlreadyOnTheTile == 0){
+            map->bombList[map->nbBombsOnMap] = initBomb(player);
+            map->bombList[map->nbBombsOnMap]->id = map->nbBombsOnMap;
+            printf("x: %d, y: %d\n", map->bombList[map->nbBombsOnMap]->x, map->bombList[map->nbBombsOnMap]->y);
+            map->nbBombsOnMap++;
+            printf("nbBombLaunched: %d\n",player->currentNumberOfBombsLaunched);
+        } else {
+            printf("a bomb is already on this tile\n");
+        }
     } else {
-        printf("a bomb is already on this tile\n");
+        printf("Maximum bombs already launched!\n");
     }
+    
 }
 
 void keyHandler(char c, Map * map, Player * player) {
@@ -167,6 +175,7 @@ void keyHandler(char c, Map * map, Player * player) {
         }
         printf("keyHandler, collisionCheckerValue %d\n",collision);
     } else if (c == 'w'){ // Player want to pass (w-WAIT)
+        return;
         //wait(c, map, player);
     } else if (c == 'b'){// Player want to pose a bomb
         poseBomb(map, player);
