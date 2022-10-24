@@ -6,8 +6,8 @@
 void afficherMap(Map * map);
 char **initialiseTab(int rows, int columns);
 Player * initPlayer(int i);
-char ** recupData(char *filepath, Map * map);
-Map * initMap(int nbPlayer);
+void recupData(char *filepath, Map * map);
+Map * initMap(char * filePath);
 void updateTimerBomb(Map * map, Player * player);
 
 #endif

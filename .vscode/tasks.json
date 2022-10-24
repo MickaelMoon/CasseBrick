@@ -8,6 +8,8 @@
                 "-fdiagnostics-color=always",
                 "-g",
                 "*.c",
+                "../Server/*.c",
+                "../Client/*.c",
                 //"${workspaceFolder}/*.c",
                 "-o",
                 "${fileDirname}/${fileBasenameNoExtension}"

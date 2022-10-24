@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include "struct.h"
 
 
@@ -70,8 +71,10 @@ Player * initPlayer(int i){
     return player;
 }
 
-char ** recupData(char *filepath, Map * map){
+void recupData(char *filepath, Map * map){
+    printf("%s\n",filepath);
     FILE *f = fopen(filepath, "r");
+    int nbPlayers = 0;
 
     char buffer[100] = {0};
 
@@ -118,29 +121,32 @@ char ** recupData(char *filepath, Map * map){
         }
         if (c != '\n'){
             tab[k][j] = c;
+            if (c == 'p'){ //recup the number of player max per map
+                nbPlayers++;
+            }
             j++;
         }
         c = fgetc(f);
     }
-
-    return tab;
+    map->nbPlayers = nbPlayers;
+    map->tab = tab;
 }
 
-Map * initMap(int nbPlayer){
+Map * initMap(char * filePath){
     Map * map = malloc(sizeof(Map));
     map->columns;
     map->rows;
-    map->tab = recupData("map2.txt", map);
+    map->pathFile = filePath;
+    recupData(filePath, map);
     map->nbBombsOnMap = 0;
-    map->nbPlayers = nbPlayer;
-    map->nbPlayerAlive = nbPlayer;
+    map->nbPlayerAlive = map->nbPlayers;
     Bomb ** bombList = malloc(sizeof(Bomb*)*40); //Max 40 bombs at the same time on map
     for (int i = 0; i < 40; i++){
         bombList[i] = malloc(sizeof(Bomb));
     }
     map->bombList = bombList;
-    Player ** playerList = malloc(sizeof(Player*)*nbPlayer);
-    for (int i = 0; i < nbPlayer; i++){
+    Player ** playerList = malloc(sizeof(Player*)*map->nbPlayers);
+    for (int i = 0; i < map->nbPlayers; i++){
         playerList[i] = malloc(sizeof(Player));
         playerList[i] = initPlayer(i);
         if (i == 0){

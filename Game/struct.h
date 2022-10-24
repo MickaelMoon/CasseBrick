@@ -7,6 +7,11 @@ typedef enum {
     isPlaying = 1,
 } PlayerStatus;
 
+typedef enum {
+    soloplayer = 0,
+    multiplayer = 1,
+} GameStatus;
+
 typedef struct {
     int x;
     int y;
@@ -35,6 +40,7 @@ typedef struct {
 } Bomb;
 
 typedef struct {
+    char * pathFile;
     int columns;
     int rows;
     char ** tab;
@@ -45,5 +51,11 @@ typedef struct {
     Bomb ** bombList; // Array of bombs launched, to be modified with each exploding bombs
     Player ** playerList; // Array of players in the game, do not remove any player. Modifies the PlayerStatus if needed.
 } Map;
+
+
+typedef struct {
+    GameStatus status;
+    char ** filePathMapChoosen;
+} Game;
 
 #endif
