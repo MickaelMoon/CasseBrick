@@ -1,2 +1,7 @@
 .idea/
 ./cmake-build-debug/
+.vscode/*
+documentation/*
+Divers/*
+cmake-build-debug/*
+

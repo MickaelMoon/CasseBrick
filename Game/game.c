@@ -19,9 +19,10 @@ Game * initGame(int mode){
         mapChoosen[i] = malloc(sizeof(char)*20); //map filePath should not be higher than 20 characters
     }
     int nbOfMapChoosen;
+    int mapChoice = -1;
 
 
-    int mapChoice;
+do {
    printf("Which map would you like in this game pool?\n");
    printf("Choices are:\n");
    printf("2 players maps:\n");
@@ -47,6 +48,8 @@ Game * initGame(int mode){
         filePath = "Map/map2.txt";
         break;
    }
+}while (nbOfMapChoosen < 6 && mapChoice != 0);
+
 
 
 }

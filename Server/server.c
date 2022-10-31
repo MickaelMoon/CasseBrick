@@ -188,6 +188,7 @@ static int init_connection(void)
       exit(errno);
    }
 
+   // créé une liste d attente de taille MAX_CLIENT, souhaitant se connecter à sock (serveur)
    if(listen(sock, MAX_CLIENTS) == SOCKET_ERROR)
    {
       perror("listen()");

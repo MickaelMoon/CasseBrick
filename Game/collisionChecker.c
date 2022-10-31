@@ -80,7 +80,7 @@ int tileChecker(int x, int y, Map * map, Player * player){
 
 int collisionChecker(Player * player, Map * map, char direction){
     /* check if player next Tile is an empty Tile.
-    0 = empty;
+    0 = empty ;
     1 = player or wall;
     2 = bomb;
     Will have to implement items here <-----
