@@ -5,6 +5,7 @@
 
 void afficherMap(Map * map);
 char **initialiseTab(int rows, int columns);
+int nbPlayerMaxPerMap(char * filepath);
 Player * initPlayer(int i);
 void recupData(char *filepath, Map * map);
 Map * initMap(char * filePath);

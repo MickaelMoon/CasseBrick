@@ -89,6 +89,12 @@ void explosion(Bomb * bomb, Map *map){
                                 playerHit->life--;
                             } else {
                                 playerHit->status = isDead;
+                                for (int z = 0; z < map->nbBombsOnMap;z++){
+                                    if (map->bombList[z]->x == i && map->bombList[z]->y == Y){
+                                        explosion(map->bombList[z], map);
+                                        break;
+                                    }
+                                }
                                 map->tab[Y][i] = 'F';
                                 map->nbPlayerAlive--;
 
@@ -131,6 +137,11 @@ void explosion(Bomb * bomb, Map *map){
                                 playerHit->life--;
                             } else {
                                 playerHit->status = isDead;
+                                for (int z = 0; z < map->nbBombsOnMap;z++){
+                                    if (map->bombList[z]->x == i && map->bombList[z]->y == Y){
+                                        explosion(map->bombList[z], map);
+                                    }
+                                }
                                 map->tab[Y][i] = 'F';
                                 map->nbPlayerAlive--;
                             }
@@ -172,6 +183,11 @@ void explosion(Bomb * bomb, Map *map){
                                 playerHit->life--;
                             } else {
                                 playerHit->status = isDead;
+                                for (int z = 0; z < map->nbBombsOnMap;z++){
+                                    if (map->bombList[z]->x == X && map->bombList[z]->y == i){
+                                        explosion(map->bombList[z], map);
+                                    }
+                                }
                                 map->tab[i][X] = 'F';
                                 map->nbPlayerAlive--;
                             }
@@ -213,6 +229,11 @@ void explosion(Bomb * bomb, Map *map){
                                 playerHit->life--;
                             } else {
                                 playerHit->status = isDead;
+                                for (int z = 0; z < map->nbBombsOnMap;z++){
+                                    if (map->bombList[z]->x == X && map->bombList[z]->y == i){
+                                        explosion(map->bombList[z], map);
+                                    }
+                                }
                                 map->tab[i][X] = 'F';
                                 map->nbPlayerAlive--;
                             }

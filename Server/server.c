@@ -27,7 +27,8 @@ static void end(void)
 }
 
 static void app(void)
-{
+{  
+   // sock = socket serveur
    SOCKET sock = init_connection();
    char buffer[BUF_SIZE];
    /* the index for the array */
@@ -55,18 +56,21 @@ static void app(void)
          FD_SET(clients[i].sock, &rdfs);
       }
 
+      //Select permet d'attendre que rdfs soit modifié (données en lecture possibles), et lorsque c'est le cas, la suite du programme se déroule
       if(select(max + 1, &rdfs, NULL, NULL, NULL) == -1)
       {
          perror("select()");
          exit(errno);
       }
 
-      /* something from standard input : i.e keyboard */
+      /* something from standard input : i.e keyboard 
+      si le fichier modifié est STDIN_FILENO, cela veut dire que l'on a ecrit quelque chose dans la console serveur, ce qui est notre condition d'arret du serveur */
       if(FD_ISSET(STDIN_FILENO, &rdfs))
       {
          /* stop process when type on keyboard */
          break;
       }
+      /* si sock est un fichier modifié, cela veut dire qu'il a reçu une demande de connexion*/
       else if(FD_ISSET(sock, &rdfs))
       {
          /* new client */
@@ -88,7 +92,7 @@ static void app(void)
 
          /* what is the new maximum fd ? */
          max = csock > max ? csock : max;
-
+         // on rajoute le client aux descripteurs surveillés en lecture dans le select
          FD_SET(csock, &rdfs);
 
          Client c = { csock };
@@ -96,12 +100,13 @@ static void app(void)
          clients[actual] = c;
          actual++;
       }
-      else
+      /* le fichier modifié n'est ni STDIN_FILLO, ni le socket serveur, c'est donc un socket client qui nous a envoyé un message */
+      else if (actual == MAX_CLIENTS) // tous les joueurs nécessaires sont connectés au serveur
       {
          int i = 0;
          for(i = 0; i < actual; i++)
          {
-            /* a client is talking */
+            /* On vérifie quel client parle */
             if(FD_ISSET(clients[i].sock, &rdfs))
             {
                Client client = clients[i];
@@ -117,7 +122,34 @@ static void app(void)
                }
                else
                {
+                  /* Verifier si le client qui parle est le currentPlayer*/
+
                   send_message_to_all_clients(clients, client, actual, buffer, 0);
+               }
+               break;
+            }
+         }
+      } else { //pas encore assez de joueurs connectés au serveur
+         int i = 0;
+         for(i = 0; i < actual; i++)
+         {
+            /* On vérifie quel client parle */
+            if(FD_ISSET(clients[i].sock, &rdfs))
+            {
+               Client client = clients[i];
+               int c = read_client(clients[i].sock, buffer);
+               /* client disconnected */
+               if(c == 0)
+               {
+                  closesocket(clients[i].sock);
+                  remove_client(clients, i, &actual);
+                  strncpy(buffer, client.name, BUF_SIZE - 1);
+                  strncat(buffer, " disconnected !", BUF_SIZE - strlen(buffer) - 1);
+                  //send_message_to_all_clients(clients, client, actual, buffer, 1);
+               }
+               else
+               {
+                  write_client(clients[i].sock, "wait for other players\n");
                }
                break;
             }
@@ -167,6 +199,7 @@ static void send_message_to_all_clients(Client *clients, Client sender, int actu
    }
 }
 
+//créé la socket serveur + liste d'attente de connexion associée
 static int init_connection(void)
 {
    SOCKET sock = socket(AF_INET, SOCK_STREAM, 0);

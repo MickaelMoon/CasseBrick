@@ -16,12 +16,12 @@ int main() {
 
     switch(startingChoice){
         case 1:
-            launchGame();
+            launchGame(1);
             break;
         case 2:
             // voir parameters
             launchServer();
-            //break; //see if remove break to launch server & client as the server would like to play too
+            break; //see if remove break to launch server & client as the server would like to play too
         case 3:
             char **argv = malloc(sizeof(char*)*2);
             argv[0] = malloc(sizeof(char)*20);
@@ -30,6 +30,7 @@ int main() {
             scanf("%s", argv[0]);
             printf("What is your pseudo ?\n");
             scanf("%s", argv[1]);
+
             launchClient(2, argv);
             break;
     }

@@ -71,6 +71,46 @@ Player * initPlayer(int i){
     return player;
 }
 
+int nbPlayerMaxPerMap(char * filepath){
+    FILE *f = fopen(filepath, "r");
+    int nbPlayers = 0;
+        char buffer[100] = {0};
+    fgets(buffer, 29, f); //remove 1st line
+
+    fgets(buffer, 29, f);
+    int index = 0;
+    int i = 0;
+    char ro[3];
+    char co[3];
+
+    while (buffer[index] != ' ' && buffer[index] != '\0'){
+        co[i] = buffer[index];
+        i++;
+        index++;
+    }
+    i = 0;
+    index++;
+    while (buffer[index] != ' ' && buffer[index] != '\0'){
+        ro[i] = buffer[index];
+        i++;
+        index++;
+    }
+    char rows = atoi(ro);
+    char columns = atoi(co);
+
+    char c = fgetc(f);
+    int k = 0;
+    int j = 0;
+    while (c != EOF){
+        if (c == 'p'){ //recup the number of player max per map
+            nbPlayers++;
+        }
+        c = fgetc(f);
+    }
+    return nbPlayers;
+
+}
+
 void recupData(char *filepath, Map * map){
     printf("%s\n",filepath);
     FILE *f = fopen(filepath, "r");
@@ -146,13 +186,25 @@ Map * initMap(char * filePath){
     }
     map->bombList = bombList;
     Player ** playerList = malloc(sizeof(Player*)*map->nbPlayers);
+    int index = 0;
+    for (int i = 0; i < map->rows; i++){
+        for (int j = 0; j < map->columns; j++){
+            if (map->tab[i][j] == 'p'){
+                playerList[index] = malloc(sizeof(Player));
+                playerList[index] = initPlayer(index);
+                playerList[index]->x = j;
+                playerList[index]->y = i;
+                map->tab[i][j] = playerList[index]->token;
+                index++;
+            }
+        }
+    }
+
+/*
     for (int i = 0; i < map->nbPlayers; i++){
-        playerList[i] = malloc(sizeof(Player));
-        playerList[i] = initPlayer(i);
+
         if (i == 0){
-            playerList[0]->x = 1;
-            playerList[0]->y = 1;
-            map->tab[1][1] = playerList[0]->token;
+
         } else if (i == 1){
             playerList[1]->x = map->columns-2;
             playerList[1]->y = map->rows -2;
@@ -166,7 +218,7 @@ Map * initMap(char * filePath){
             playerList[3]->y = map->rows -2;
             map->tab[map->rows-2][1] = playerList[3]->token;
         }
-    }
+    }*/
     map->playerList = playerList;
 
     return map;

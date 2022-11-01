@@ -1,0 +1,9 @@
+1
+9 7
+mm      x
+mp  x  x 
+  m x m  
+xmxmxmxmx
+  m x m  
+ x  x  pm
+x      mm
