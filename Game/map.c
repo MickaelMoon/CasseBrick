@@ -185,6 +185,8 @@ Map * initMap(char * filePath){
         bombList[i] = malloc(sizeof(Bomb));
     }
     map->bombList = bombList;
+    
+    //create the players at each place a 'p' is written in the map->tab, and replace the 'p' by the player token
     Player ** playerList = malloc(sizeof(Player*)*map->nbPlayers);
     int index = 0;
     for (int i = 0; i < map->rows; i++){
@@ -200,25 +202,6 @@ Map * initMap(char * filePath){
         }
     }
 
-/*
-    for (int i = 0; i < map->nbPlayers; i++){
-
-        if (i == 0){
-
-        } else if (i == 1){
-            playerList[1]->x = map->columns-2;
-            playerList[1]->y = map->rows -2;
-            map->tab[map->rows-2][map->columns -2] = playerList[1]->token;
-        } else if (i == 2){
-            playerList[2]->x = map->columns-2;
-            playerList[2]->y = 1;
-            map->tab[1][map->columns-2] = playerList[2]->token;
-        } else if (i == 3){
-            playerList[3]->x = 1;
-            playerList[3]->y = map->rows -2;
-            map->tab[map->rows-2][1] = playerList[3]->token;
-        }
-    }*/
     map->playerList = playerList;
 
     return map;

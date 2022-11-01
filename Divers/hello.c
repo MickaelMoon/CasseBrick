@@ -1,32 +1,26 @@
+#include <time.h>
+#include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
 int main() {
     
-
-    FILE * f = fopen("./test.txt","r");
-    char tab[5][5];
-
-    char c = fgetc(f);
+  srand(time(NULL));
+    int randomfilePath = -1;
+    int previousFilePath = -1;
+    //boucle while Do you want to play next map ? Yes all player/ or quit/wait other player
     int i = 0;
-    int j = 0;
-    while (c != EOF){
-         if (j == 5){
-            j = j % 5;
-            i++;
-        }
-        if (c != '\n'){
-            tab[i][j] = c;
-            j++;
-        }
-        c = fgetc(f);
+    while (i < 20){
+        do{
+            randomfilePath = rand()%4;
+
+        }while(randomfilePath == previousFilePath);
+        printf("rand:%d, prev:%d\n",randomfilePath,previousFilePath);
+        previousFilePath = randomfilePath;
+        i++;
     }
 
-            for (int i = 0; i < 5; i++){
-                for (int j = 0; j < 5; j++){
-                    printf("%c",tab[i][j]);
-                }
-                printf("\n");
-        }
+
 
     return 0;
 }

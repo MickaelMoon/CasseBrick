@@ -2,7 +2,11 @@
 #include <fcntl.h>
 #include <locale.h>
 #include <unistd.h>
+#include <time.h>
+#include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
+
 #include "struct.h"
 #include "keyboardHandler.h"
 //#include "bomb.h"
@@ -10,14 +14,6 @@
 #include "../Server/server.h"
 #include "../Client/client.h"
 
-int mapIsInTab(char ** tab, int lenTab, char * map){
-    for (int i = 0; i < lenTab; i++){
-        if (tab[i] == map){
-            return 1;
-        }
-    }
-    return 0;
-}
 
 Game * initGame(int mode){
     Game * game = malloc(sizeof(Game));
@@ -41,6 +37,7 @@ Game * initGame(int mode){
         [2] = "6: SkullIsland | ",
         [3] = "7: OverPowered | "
     };
+    // pendingMaps stocks the numbers corresponding to the map selected. Make it easier to check duplicate. Final mapChoosen tab is build at the end of the process.
     int *pendingMaps = malloc(sizeof(int)*6);
     int nb2playerMaps = 0;
     int nb4playerMaps = 0;
@@ -94,6 +91,7 @@ do {
         printf("\n");
    }
 
+    //solo player or server creator select the map he wants to add to the pool.
     do{
         int c; 
   
@@ -103,10 +101,12 @@ do {
         mapChoice = -1;
     }while (scanf("%d",&mapChoice) != 1 && (mapChoice > 7 || mapChoice < 0));
 
+    // 0 finish the period of selection
     if (mapChoice == 0){
         break;
     }
    
+    // check if the number add or remove a map from the pool
     int alreadySelected = 0;
     for (int i = 0; i < nbOfMapChoosen; i++){
         if (pendingMaps[i] == mapChoice){
@@ -114,7 +114,7 @@ do {
             break;
         }
     }
-    if (alreadySelected == 0){
+    if (alreadySelected == 0){ //new map
         pendingMaps[nbOfMapChoosen] = mapChoice;
         nbOfMapChoosen++;
         if (mapChoice == 1 || mapChoice == 2 || mapChoice == 3){
@@ -122,7 +122,7 @@ do {
         } else {
             nb4playerMaps++;
         }
-    } else {
+    } else { //duplicate map = map to be removed
         for (int i = 0; i < nbOfMapChoosen-1; i++){
             while(pendingMaps[i] != mapChoice){
                 i++;
@@ -144,64 +144,78 @@ do {
 
 }while (nbOfMapChoosen < 6 && mapChoice != 0);
 
-   char * filePath;
-   switch(mapChoice){
-    case 1:
-        filePath = "Map/map.txt";
-        break;
-    case 2:
-        filePath = "Map/map2.txt";
-        break;
+//tableau de filePath
+
+    //filePath constructor to aliment mapChoosen
+   for (int i = 0; i < nbOfMapChoosen; i++){
+    char str [40] = "./Map/map";
+    str[9] = pendingMaps[i] + '0';
+    char end [5] = ".txt";
+    strcat(str,end);
+    strcpy(mapChoosen[i], str);
    }
+
+   game->filePathMapChoosen = mapChoosen;
+   game->nbMaxPlayer = nb2playerMaps > nb4playerMaps ? 2 : 4;
+   game->nbOfMapsAvailable = nbOfMapChoosen;
 
 }
 
 void launchGame(int mode){
-    /*int nbPlayer;
 
-   do{
-       printf("How Many players will play ? (2-4)\n");
-       scanf("%d", &nbPlayer);
-   } while (nbPlayer != 2 && nbPlayer != 3 && nbPlayer != 4);*/
-
-    initGame(mode);
-
+    Game *game = initGame(mode);
+    srand(time(NULL));
+    int randomfilePath = -1;
+    int previousFilePath = -1;
     //boucle while Do you want to play next map ? Yes all player/ or quit/wait other player
 
-    char * filePath = "./Map/map3.txt"; // Temp
+    /*MAP GENERATED*/
 
-   Map * map = initMap(filePath);
+        //generate a random filePath (different from previous one, except if only one map has been selected)
+        if (game->nbOfMapsAvailable == 1){
+            randomfilePath = 0;
+        } else {
+            do{
+                randomfilePath = rand()%game->nbOfMapsAvailable;
 
-   //1st map - launchMap(Map * map);
+            }while(randomfilePath == previousFilePath);
+            previousFilePath = randomfilePath;
+        }
+        char *filePath = game->filePathMapChoosen[randomfilePath];
 
-   char action;
+        Map * map = initMap(filePath);
+   /* */
 
-   system("clear");
-   int turn = 0;
-   afficherMap(map);
-    Player * currentPlayer;
+    /*PLAY START HERE*/
+        char action;
 
-   do{
-       if (map->playerList[turn%map->nbPlayers]->status == isDead){
-        turn++;
-       } /* elsif player->isBot == true
-            botTurn() --Algo IA
-            turn++ */
-       else {
-        currentPlayer = map->playerList[turn%map->nbPlayers];
-        //printf("nb Bomb on field: %d\n", map->nbBombsOnMap);
-        printf("\nPlayer %c status:\nMax bomb: %d / Fire Pwr: %d\nPasseBomb: %d / BombKick: %d\nInvincibility: %d turn(s)\nHeart Shield: %d / Life(s): %d\n", currentPlayer->token, currentPlayer->bombMax, currentPlayer->firePower, currentPlayer->passBombs, currentPlayer->bombKick, currentPlayer->invincibilityTime, currentPlayer->heart, currentPlayer->life);
+        system("clear");
+        int turn = 0;
+        afficherMap(map);
+            Player * currentPlayer;
 
-       printf("\nDo something, Player %c:\n",currentPlayer->token);
-       scanf(" %c",&action);
-       keyHandler(action, map, currentPlayer);
-       updateTimerBomb(map, currentPlayer);
-       system("clear");
-       afficherMap(map);
-       turn++;
-       if (currentPlayer->invincibilityTime != 0){
-         currentPlayer->invincibilityTime--;
-       }
-       }
-   } while (map->nbPlayerAlive > 1);
+        do{
+            if (map->playerList[turn%map->nbPlayers]->status == isDead){
+                turn++;
+            } /* elsif player->isBot == true
+                    botTurn() --Algo IA
+                    turn++ */
+            else {
+                currentPlayer = map->playerList[turn%map->nbPlayers];
+                //printf("nb Bomb on field: %d\n", map->nbBombsOnMap);
+                printf("\nPlayer %c status:\nMax bomb: %d / Fire Pwr: %d\nPasseBomb: %d / BombKick: %d\nInvincibility: %d turn(s)\nHeart Shield: %d / Life(s): %d\n", currentPlayer->token, currentPlayer->bombMax, currentPlayer->firePower, currentPlayer->passBombs, currentPlayer->bombKick, currentPlayer->invincibilityTime, currentPlayer->heart, currentPlayer->life);
+
+            printf("\nDo something, Player %c:\n",currentPlayer->token);
+            scanf(" %c",&action);
+            keyHandler(action, map, currentPlayer);
+            updateTimerBomb(map, currentPlayer);
+            system("clear");
+            afficherMap(map);
+            turn++;
+            if (currentPlayer->invincibilityTime != 0){
+                currentPlayer->invincibilityTime--;
+            }
+            }
+        } while (map->nbPlayerAlive > 1);
+   /* */
 }

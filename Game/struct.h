@@ -55,7 +55,9 @@ typedef struct {
 
 typedef struct {
     GameStatus status;
+    int nbMaxPlayer;
     char ** filePathMapChoosen;
+    int nbOfMapsAvailable;
 } Game;
 
 #endif
