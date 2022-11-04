@@ -55,11 +55,11 @@ static void app(void)
     int randomfilePath = -1;
     int previousFilePath = -1;
     int startOfMap = 1;
+   int continuer = 1;
 
-   while(1)
+   while(continuer)
    {
       int i = 0;
-      int continuer = 1;
       FD_ZERO(&rdfs);
 
       /* add STDIN_FILENO */
@@ -170,7 +170,6 @@ static void app(void)
             Map * map = initMap(filePath);
             game->currentMap = map;
             startOfMap = 0;
-            continuer = 0;
 
             for (int i = 0; i < MAX_CLIENTS; i++){
                map->playerList[i]->socket = clients[i].sock;
@@ -276,12 +275,13 @@ static void app(void)
         } while (map->nbPlayerAlive > 1);
 
         sendAll(map->playerList,map->nbPlayers, "Do you wish to continue ? y/n\n");
+        printf("Continue send to all\n");
         int allAnswered = 0;
         int playersWhoHaveReplied = 0;
         int playerRepliedId[4];
         while(!allAnswered && continuer){
          FD_ZERO(&rdfs);
-
+         printf("nbAnswer: %d\n",playersWhoHaveReplied);
                   /* add socket of each client */
                   for(int i = 0; i < actual; i++)
                   {
@@ -325,9 +325,13 @@ static void app(void)
                      }
             }
          }
+         startOfMap = 1;
       }
    }
-
+   if (actual == MAX_CLIENTS){
+      sendAll(game->currentMap->playerList, actual, "Thank you for playing. See you soon !\n");
+      sleep(3);
+   }
    clear_clients(clients, actual);
    end_connection(sock);
 }
