@@ -9,7 +9,6 @@
 
 #include "struct.h"
 #include "keyboardHandler.h"
-//#include "bomb.h"
 #include "map.h"
 #include "../Server/server.h"
 #include "../Client/client.h"
@@ -99,7 +98,7 @@ do {
             c = getchar(); 
         } while (c != '\n' && c != EOF); 
         mapChoice = -1;
-    }while (scanf("%d",&mapChoice) != 1 && (mapChoice > 7 || mapChoice < 0));
+    }while (scanf("%d",&mapChoice) != 1 || (mapChoice > 7 || mapChoice < 0) || (mapChoice > 3 && nb2playerMaps != 0) || (mapChoice < 4 && mapChoice > 0 && nb4playerMaps != 0));
 
     // 0 finish the period of selection
     if (mapChoice == 0){
@@ -154,11 +153,18 @@ do {
     strcat(str,end);
     strcpy(mapChoosen[i], str);
    }
+   //Default map if nothing has been choosen
+   if (nbOfMapChoosen == 0){
+    mapChoosen[0] = "./Map/map1.txt";
+    nbOfMapChoosen = 1;
+    nb2playerMaps++;
+   }
 
    game->filePathMapChoosen = mapChoosen;
    game->nbMaxPlayer = nb2playerMaps > nb4playerMaps ? 2 : 4;
    game->nbOfMapsAvailable = nbOfMapChoosen;
 
+    return game;
 }
 
 void launchGame(int mode){
@@ -184,9 +190,15 @@ void launchGame(int mode){
         char *filePath = game->filePathMapChoosen[randomfilePath];
 
         Map * map = initMap(filePath);
+        game->currentMap = map;
    /* */
 
     /*PLAY START HERE*/
+        int c; 
+        
+        do { 
+            c = getchar(); 
+                } while (c != '\n' && c != EOF);
         char action;
 
         system("clear");
@@ -206,9 +218,26 @@ void launchGame(int mode){
                 printf("\nPlayer %c status:\nMax bomb: %d / Fire Pwr: %d\nPasseBomb: %d / BombKick: %d\nInvincibility: %d turn(s)\nHeart Shield: %d / Life(s): %d\n", currentPlayer->token, currentPlayer->bombMax, currentPlayer->firePower, currentPlayer->passBombs, currentPlayer->bombKick, currentPlayer->invincibilityTime, currentPlayer->heart, currentPlayer->life);
 
             printf("\nDo something, Player %c:\n",currentPlayer->token);
-            scanf(" %c",&action);
-            keyHandler(action, map, currentPlayer);
+            int c;
+
+            scanf("%c",&action);
+
+            while (keyHandler(action, map, currentPlayer) != 0){
+                int c; 
+        
+                do { 
+                    c = getchar(); 
+                } while (c != '\n' && c != EOF);
+                scanf("%c",&action);
+            }
+            do { 
+                    c = getchar(); 
+                } while (c != '\n' && c != EOF);
             updateTimerBomb(map, currentPlayer);
+            if (map->pause){
+                sleep(3);
+                map->pause = 0;
+            }
             system("clear");
             afficherMap(map);
             turn++;

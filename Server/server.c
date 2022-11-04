@@ -2,9 +2,17 @@
 #include <stdlib.h>
 #include <errno.h>
 #include <string.h>
+#include <wchar.h>
+#include <fcntl.h>
+#include <locale.h>
+#include <unistd.h>
+#include <time.h>
 
 #include "server.h"
 #include "client.h"
+#include "../Game/struct.h"
+#include "../Game/game.h"
+#include "../Game/map.h"
 
 static void init(void)
 {
@@ -28,8 +36,12 @@ static void end(void)
 
 static void app(void)
 {  
+   Game *game = initGame(1);
+
+   int MAX_CLIENTS = game->nbMaxPlayer;
+
    // sock = socket serveur
-   SOCKET sock = init_connection();
+   SOCKET sock = init_connection(MAX_CLIENTS);
    char buffer[BUF_SIZE];
    /* the index for the array */
    int actual = 0;
@@ -39,9 +51,15 @@ static void app(void)
 
    fd_set rdfs;
 
+    srand(time(NULL));
+    int randomfilePath = -1;
+    int previousFilePath = -1;
+    int startOfMap = 1;
+
    while(1)
    {
       int i = 0;
+      int continuer = 1;
       FD_ZERO(&rdfs);
 
       /* add STDIN_FILENO */
@@ -76,59 +94,38 @@ static void app(void)
          /* new client */
          SOCKADDR_IN csin = { 0 };
          size_t sinsize = sizeof csin;
-         int csock = accept(sock, (SOCKADDR *)&csin, &sinsize);
-         if(csock == SOCKET_ERROR)
-         {
-            perror("accept()");
-            continue;
-         }
-
-         /* after connecting the client sends its name */
-         if(read_client(csock, buffer) == -1)
-         {
-            /* disconnected */
-            continue;
-         }
-
-         /* what is the new maximum fd ? */
-         max = csock > max ? csock : max;
-         // on rajoute le client aux descripteurs surveillés en lecture dans le select
-         FD_SET(csock, &rdfs);
-
-         Client c = { csock };
-         strncpy(c.name, buffer, BUF_SIZE - 1);
-         clients[actual] = c;
-         actual++;
-      }
-      /* le fichier modifié n'est ni STDIN_FILLO, ni le socket serveur, c'est donc un socket client qui nous a envoyé un message */
-      else if (actual == MAX_CLIENTS) // tous les joueurs nécessaires sont connectés au serveur
-      {
-         int i = 0;
-         for(i = 0; i < actual; i++)
-         {
-            /* On vérifie quel client parle */
-            if(FD_ISSET(clients[i].sock, &rdfs))
+         if (actual == MAX_CLIENTS){
+            int csock = accept(sock, (SOCKADDR *)&csin, &sinsize);
+            write_client(csock, "Server full.\n");
+            close(csock);
+         } else {
+            int csock = accept(sock, (SOCKADDR *)&csin, &sinsize);
+            if(csock == SOCKET_ERROR)
             {
-               Client client = clients[i];
-               int c = read_client(clients[i].sock, buffer);
-               /* client disconnected */
-               if(c == 0)
-               {
-                  closesocket(clients[i].sock);
-                  remove_client(clients, i, &actual);
-                  strncpy(buffer, client.name, BUF_SIZE - 1);
-                  strncat(buffer, " disconnected !", BUF_SIZE - strlen(buffer) - 1);
-                  send_message_to_all_clients(clients, client, actual, buffer, 1);
-               }
-               else
-               {
-                  /* Verifier si le client qui parle est le currentPlayer*/
-
-                  send_message_to_all_clients(clients, client, actual, buffer, 0);
-               }
-               break;
+               perror("accept()");
+               continue;
             }
+
+            /* after connecting the client sends its name */
+            if(read_client(csock, buffer) == -1)
+            {
+               /* disconnected */
+               continue;
+            }
+
+            /* what is the new maximum fd ? */
+            max = csock > max ? csock : max;
+            // on rajoute le client aux descripteurs surveillés en lecture dans le select
+            FD_SET(csock, &rdfs);
+
+            Client c = { csock };
+            strncpy(c.name, buffer, BUF_SIZE - 1);
+            clients[actual] = c;
+            actual++;
+            printf("Waiting for %d player(s).\n",MAX_CLIENTS-actual);
+            c.playerToken = actual+'0';
          }
+      /* le fichier modifié n'est ni STDIN_FILLO, ni le socket serveur, c'est donc un socket client qui nous a envoyé un message */
       } else { //pas encore assez de joueurs connectés au serveur
          int i = 0;
          for(i = 0; i < actual; i++)
@@ -155,6 +152,180 @@ static void app(void)
             }
          }
       }
+      while ((actual == MAX_CLIENTS) && continuer) // tous les joueurs nécessaires sont connectés au serveur
+      {
+         if (startOfMap){
+            printf("start of map\n");
+            if (game->nbOfMapsAvailable == 1){
+               randomfilePath = 0;
+            } else {
+               do{
+                  randomfilePath = rand()%game->nbOfMapsAvailable;
+
+               }while(randomfilePath == previousFilePath);
+               previousFilePath = randomfilePath;
+            }
+            char *filePath = game->filePathMapChoosen[randomfilePath];
+
+            Map * map = initMap(filePath);
+            game->currentMap = map;
+            startOfMap = 0;
+            continuer = 0;
+
+            for (int i = 0; i < MAX_CLIENTS; i++){
+               map->playerList[i]->socket = clients[i].sock;
+               clients[i].playerToken = map->playerList[i]->token;
+            }     
+         }
+         Map * map = game->currentMap;
+         char action;
+
+        system("clear");
+        int turn = 0;
+         Player * currentPlayer;
+
+        do{
+            if (map->playerList[turn%map->nbPlayers]->status == isDead){
+                turn++;
+            } /* elsif player->isBot == true
+                    botTurn() --Algo IA
+                    turn++ */
+            else {
+               system("clear");
+               afficherMap(map);
+               sendAll(map->playerList, MAX_CLIENTS,serializeMap(map));
+               sleep(0.1);
+               char buffer[1024];
+                currentPlayer = map->playerList[turn%map->nbPlayers];
+                for (int i = 0; i < MAX_CLIENTS;i++){
+                  if (map->playerList[i] == currentPlayer){
+                     sprintf(buffer,"\nPlayer %c status:\nMax bomb: %d / Fire Pwr: %d\nPasseBomb: %d / BombKick: %d\nInvincibility: %d turn(s)\nHeart Shield: %d / Life(s): %d\n", currentPlayer->token, currentPlayer->bombMax, currentPlayer->firePower, currentPlayer->passBombs, currentPlayer->bombKick, currentPlayer->invincibilityTime, currentPlayer->heart, currentPlayer->life);
+                     write_client(currentPlayer->socket,buffer);
+                  } else {
+                     sprintf(buffer,"\nWaiting for player %c to play.\nPlayer %c status:\nMax bomb: %d / Fire Pwr: %d\nPasseBomb: %d / BombKick: %d\nInvincibility: %d turn(s)\nHeart Shield: %d / Life(s): %d\n", currentPlayer->token,currentPlayer->token, currentPlayer->bombMax, currentPlayer->firePower, currentPlayer->passBombs, currentPlayer->bombKick, currentPlayer->invincibilityTime, currentPlayer->heart, currentPlayer->life);
+                     write_client(map->playerList[i]->socket,buffer);
+                  }
+                }
+            sprintf(buffer,"\nDo something, Player %c:\n",currentPlayer->token);
+            write_client(currentPlayer->socket,buffer);
+            int currentPlayerhasPlayed = 0;
+            while(currentPlayerhasPlayed == 0)
+            {
+               FD_ZERO(&rdfs);
+
+               /* add socket of each client */
+               for(int i = 0; i < actual; i++)
+               {
+                  FD_SET(clients[i].sock, &rdfs);
+                  printf("client%d %s\n",i,clients[i].name);
+               }
+
+               if(select(max + 1, &rdfs, NULL, NULL, NULL) == -1)
+               {
+                  perror("select()");
+                  exit(errno);
+               }
+
+               for(int i = 0; i < actual; i++)
+               {
+                  /* On vérifie quel client parle */
+                  if(FD_ISSET(clients[i].sock, &rdfs))
+                  {
+                     printf("client qui parle:%s\n",clients[i].name);
+                     int c = read_client(clients[i].sock, buffer);
+                     /* client disconnected */
+                     if(c == 0)
+                     {  
+                        for (int i = 0; i < MAX_CLIENTS; i++){
+                           if (map->playerList[i]->socket == clients[i].sock){
+                              map->playerList[i]->status = isDead;
+                           }
+                        }
+                        closesocket(clients[i].sock);
+                        remove_client(clients, i, &actual);
+                        strncpy(buffer, clients[i].name, BUF_SIZE - 1);
+                        strncat(buffer, " disconnected !", BUF_SIZE - strlen(buffer) - 1);
+                        //send_message_to_all_clients(clients, client, actual, buffer, 1);
+                     }
+                     else if (clients[i].sock != currentPlayer->socket)
+                     {
+                        write_client(clients[i].sock, "wait for your turn.\n");
+                     }
+                     else {
+                        action = buffer[0];
+                        if (keyHandler(action, map, currentPlayer) == 0){
+                           currentPlayerhasPlayed = 1;
+                        } else {
+                           write_client(clients[i].sock, "Move impossible, please make another action.\n");
+                        }
+                     }
+                     break;
+                  }
+               }
+            }
+            updateTimerBomb(map, currentPlayer);
+            if (map->pause){
+               sleep(3);
+               map->pause = 0;
+            }
+            turn++;
+            if (currentPlayer->invincibilityTime != 0){
+                currentPlayer->invincibilityTime--;
+            }
+            }
+        } while (map->nbPlayerAlive > 1);
+
+        sendAll(map->playerList,map->nbPlayers, "Do you wish to continue ? y/n\n");
+        int allAnswered = 0;
+        int playersWhoHaveReplied = 0;
+        int playerRepliedId[4];
+        while(!allAnswered && continuer){
+         FD_ZERO(&rdfs);
+
+                  /* add socket of each client */
+                  for(int i = 0; i < actual; i++)
+                  {
+                     FD_SET(clients[i].sock, &rdfs);
+                     printf("client%d %s\n",i,clients[i].name);
+                  }
+
+                  if(select(max + 1, &rdfs, NULL, NULL, NULL) == -1)
+                  {
+                     perror("select()");
+                     exit(errno);
+                  }
+
+                  for(int i = 0; i < actual; i++)
+                  {
+                     /* On vérifie quel client parle */
+                     if(FD_ISSET(clients[i].sock, &rdfs))
+                     {
+                        int c = read_client(clients[i].sock, buffer);
+                        /* client disconnected */
+                        if(c == 0 || buffer[0] == 'n')
+                        {
+                           continuer = 0;
+                           break;
+                        }
+                        if (buffer[0] == 'y'){
+                           int j = 0;
+                           for (j = 0; j < playersWhoHaveReplied; j++){
+                              if (playerRepliedId[j] == i){
+                                 break;
+                              }
+                           }
+                           if (j == playersWhoHaveReplied){
+                              playerRepliedId[playersWhoHaveReplied] = i;
+                              playersWhoHaveReplied++;
+                           }
+                        }
+                        if (playersWhoHaveReplied == MAX_CLIENTS){
+                           allAnswered = 1;
+                        }
+                     }
+            }
+         }
+      }
    }
 
    clear_clients(clients, actual);
@@ -176,6 +347,16 @@ static void remove_client(Client *clients, int to_remove, int *actual)
    memmove(clients + to_remove, clients + to_remove + 1, (*actual - to_remove - 1) * sizeof(Client));
    /* number client - 1 */
    (*actual)--;
+}
+
+void sendAll(Player **clients, int actual, const char *buffer){
+   int i = 0;
+   char message[BUF_SIZE];
+   message[0] = 0;
+   strncat(message, buffer, sizeof message - strlen(message) - 1);
+   for (int i = 0; i < actual; i++){
+      write_client(clients[i]->socket, message);
+   }
 }
 
 static void send_message_to_all_clients(Client *clients, Client sender, int actual, const char *buffer, char from_server)
@@ -200,7 +381,7 @@ static void send_message_to_all_clients(Client *clients, Client sender, int actu
 }
 
 //créé la socket serveur + liste d'attente de connexion associée
-static int init_connection(void)
+static int init_connection(const int MAX_CLIENTS)
 {
    SOCKET sock = socket(AF_INET, SOCK_STREAM, 0);
    SOCKADDR_IN sin = { 0 };

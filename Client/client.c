@@ -4,6 +4,7 @@
 #include <string.h>
 
 #include "client.h"
+#include "../Game/map.h"
 
 static void init(void)
 {
@@ -73,13 +74,28 @@ static void app(const char *address, const char *name)
       else if(FD_ISSET(sock, &rdfs))
       {
          int n = read_server(sock, buffer);
+         char * clear = "clear";
+         char * map1 = "  ";
+         char * map2 = "xx";
+         char * map3 = "mm";
+
          /* server down */
          if(n == 0)
          {
             printf("Server disconnected !\n");
             break;
          }
-         puts(buffer);
+         /*if (strncmp(buffer,clear,5) == 0){
+            system("clear"); 
+         } else */if (buffer[0] == ' ' || buffer[0] == 'x' || buffer[0] == 'm') {
+            system("clear");
+            afficherSerializedMap(buffer);
+         }
+         else {
+            for (int i = 0; i < n; i++){
+               printf("%c",buffer[i]);
+            }
+         }
       }
    }
 

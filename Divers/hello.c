@@ -4,22 +4,29 @@
 #include <string.h>
 
 int main() {
-    
-  srand(time(NULL));
-    int randomfilePath = -1;
-    int previousFilePath = -1;
-    //boucle while Do you want to play next map ? Yes all player/ or quit/wait other player
-    int i = 0;
-    while (i < 20){
-        do{
-            randomfilePath = rand()%4;
 
-        }while(randomfilePath == previousFilePath);
-        printf("rand:%d, prev:%d\n",randomfilePath,previousFilePath);
-        previousFilePath = randomfilePath;
-        i++;
+    char * buffer = malloc(sizeof(char)*1024);
+
+    char tab[3][3] = {
+        {'a','b','c'},
+        {'d','e','f'},
+        {'g','h','i'}
+    };
+
+
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
+            char cToStr[2];
+            cToStr[0] = tab[i][j];
+            cToStr[1] ='\0';
+            strcat(buffer,cToStr);
+        }
+        char cToStr[2];
+        cToStr[0] = '\n';
+        cToStr[1] ='\0';
+        strcat(buffer,cToStr);
     }
-
+    printf("%s",buffer);
 
 
     return 0;

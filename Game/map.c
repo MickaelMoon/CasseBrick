@@ -1,9 +1,47 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <locale.h>
+#include <string.h>
 #include "struct.h"
 
+void afficherSerializedMap(char * map){
+    setlocale(LC_ALL, "");
+
+    for (int i = 0; i < strlen(map); i++) {
+        if (map[i] == 'x'){
+            printf("%lc",0x2593);
+        }else if (map[i] == 'm'){
+            printf("%lc",0x2591);
+        }else if (map[i] == '+'){
+            printf("%lc",0x2A39);
+        }else if (map[i] == '-'){
+            printf("%lc",0x2A3A);
+        }else if (map[i] == 'O'){
+            printf("%lc",0x2C90);
+        }else if (map[i] == 'o'){
+            printf("%lc",0x2C91);
+        }else if (map[i] == 'P'){
+            printf("%lc",0x2348);
+        }else if (map[i] == 'K'){
+            printf("%lc",0x27B2);
+        }else if (map[i] == '*'){
+            printf("%lc",0x2605);
+        }else if (map[i] == '#'){
+            printf("%lc",0x29BC);
+        }else if (map[i] == '@'){
+            printf("%lc",0x2665);
+        }else if (map[i] == '&'){
+            printf("%lc",0x290A);
+        }else if (map[i] == 'B'){
+            printf("%lc",0x25EF);
+        }else {
+            printf("%lc",map[i]);
+        }
+    }
+}
 
 void afficherMap(Map * map){
+    setlocale(LC_ALL, "");
     // ajoute les bombes sur la map (gère le soucis où un joueur pose ou traverse une bombe, afin de n'afficher que le joueur)
     for (int i = 0; i < map->nbBombsOnMap; i++){
         int x = map->bombList[i]->x;
@@ -15,10 +53,65 @@ void afficherMap(Map * map){
 
     for (int i = 0; i < map->rows; i++) {
         for (int j = 0; j < map->columns; j++) {
-            printf("%c",map->tab[i][j]);
+            if (map->tab[i][j] == 'x'){
+                printf("%lc",0x2593);
+            }else if (map->tab[i][j] == 'm'){
+                printf("%lc",0x2591);
+            }else if (map->tab[i][j] == '+'){
+                printf("%lc",0x2A39);
+            }else if (map->tab[i][j] == '-'){
+                printf("%lc",0x2A3A);
+            }else if (map->tab[i][j] == 'O'){
+                printf("%lc",0x2C90);
+            }else if (map->tab[i][j] == 'o'){
+                printf("%lc",0x2C91);
+            }else if (map->tab[i][j] == 'P'){
+                printf("%lc",0x2348);
+            }else if (map->tab[i][j] == 'K'){
+                printf("%lc",0x27B2);
+            }else if (map->tab[i][j] == '*'){
+                printf("%lc",0x2605);
+            }else if (map->tab[i][j] == '#'){
+                printf("%lc",0x29BC);
+            }else if (map->tab[i][j] == '@'){
+                printf("%lc",0x2665);
+            }else if (map->tab[i][j] == '&'){
+                printf("%lc",0x290A);
+            }else if (map->tab[i][j] == 'B'){
+                printf("%lc",0x25EF);
+            }else {
+            printf("%lc",map->tab[i][j]);
+
+            }
         }
         printf("\n");
     }
+}
+
+char * serializeMap(Map * map){
+    char * buffer = malloc(sizeof(char)*1024);
+    // ajoute les bombes sur la map (gère le soucis où un joueur pose ou traverse une bombe, afin de n'afficher que le joueur)
+    for (int i = 0; i < map->nbBombsOnMap; i++){
+        int x = map->bombList[i]->x;
+        int y = map->bombList[i]->y;
+        if (map->tab[y][x] == ' ' && map->bombList[i]->timer > 0){
+            map->tab[y][x] = 'B';
+        }
+    }
+
+    for (int i = 0; i < map->rows; i++) {
+        for (int j = 0; j < map->columns; j++) {
+            char cToStr[2];
+            cToStr[0] = map->tab[i][j];
+            cToStr[1] ='\0';
+            strcat(buffer,cToStr);
+        }
+        char cToStr[2];
+        cToStr[0] = '\n';
+        cToStr[1] ='\0';
+        strcat(buffer,cToStr);
+    }
+    return buffer;
 }
 
 //deprecated, replaced by recupData
@@ -67,6 +160,7 @@ Player * initPlayer(int i){
     player->invincibilityTime = 0;
     player->heart = 0; //Max 1 per map
     player->life = 0; //No limit
+    player->socket = -1;
 
     return player;
 }
@@ -177,6 +271,7 @@ Map * initMap(char * filePath){
     map->columns;
     map->rows;
     map->pathFile = filePath;
+    map->pause = 0;
     recupData(filePath, map);
     map->nbBombsOnMap = 0;
     map->nbPlayerAlive = map->nbPlayers;

@@ -28,6 +28,7 @@ typedef struct {
     int invincibilityTime;
     int heart; //Max 1 per map
     int life; //No limit
+    int socket;
 } Player;
 
 typedef struct {
@@ -48,6 +49,7 @@ typedef struct {
     int nbBombsOnMap;
     int nbPlayers;
     int nbPlayerAlive;
+    int pause;
     Bomb ** bombList; // Array of bombs launched, to be modified with each exploding bombs
     Player ** playerList; // Array of players in the game, do not remove any player. Modifies the PlayerStatus if needed.
 } Map;
@@ -58,6 +60,7 @@ typedef struct {
     int nbMaxPlayer;
     char ** filePathMapChoosen;
     int nbOfMapsAvailable;
+    Map * currentMap;
 } Game;
 
 #endif

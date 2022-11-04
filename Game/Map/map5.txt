@@ -1,10 +1,10 @@
 1
-10 10
+15 15
      xxxxx     
      x p x     
      xm mx     
      xmmmx     
-     xmmmx
+     xmmmx     
 xxxxxxmmmxxxxxx
 x mmmmxmxmmmm x
 xp mmmm*mmmm px
@@ -12,6 +12,6 @@ x mmmmxmxmmmm x
 xxxxxxmmmxxxxxx
      xmmmx     
      xmmmx     
-     xm mx
+     xm mx     
      x p x     
      xxxxx     

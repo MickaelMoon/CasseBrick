@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include "struct.h"
 #include "map.h"
+#include "../Server/server.h"
 
 void itemGenerator(Map * map, int x, int y){
     int r = rand()%100;
@@ -253,7 +254,9 @@ void explosion(Bomb * bomb, Map *map){
     system("clear");
 
     afficherMap(map);
-    sleep(3);
+    if (map->playerList[0]->socket != -1){
+        sendAll(map->playerList,map->nbPlayers, serializeMap(map));
+    }
     for (int i = 0; i < map->rows; i++) {
         for (int j = 0; j < map->columns; j++) {
             if (map->tab[i][j] == 'F'){
@@ -261,4 +264,11 @@ void explosion(Bomb * bomb, Map *map){
             }
         }
     }
+    map->pause = 1;
+    /*system("clear");
+    afficherMap(map);
+    if (map->playerList[0]->socket != -1){
+        sendAll(map->playerList,map->nbPlayers, serializeMap(map));
+    }
+    sleep(0.1);*/
 }

@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include "struct.h"
 #include "collisionChecker.h"
+#include "../Server/server.h"
 
 
 void move (char c, Map * map, Player * player){
@@ -158,28 +159,31 @@ void poseBomb(Map * map, Player * player){
     
 }
 
-void keyHandler(char c, Map * map, Player * player) {
+int keyHandler(char c, Map * map, Player * player) {
     // Player want to move on map (n-NORD / s-SUD / e-EST / o-OUEST)
     if (c == 'z' || c == 's' || c == 'd' || c == 'q') {
         int collision = collisionChecker(player, map, c);
         if (collision == 0){ //next Tile is empty
             move(c, map, player);
         } else if (collision == 1){ //next Tile is a player or a wall
-            printf("Move impossible, choose another action\n");
+            printf("Move impossible, choose another action.\n");
+            return -1;
         } else if (collision == 2){ //next Tile is a bomb
             if (player->passBombs == 1){ //Player can walk on bombs
                 move(c,map,player);
             } else if (player->bombKick == 1){ //Player can push bombs
                 kickBomb(c,map,player);
+            } else {
+                printf("Move impossible, bomb is blocking your path.\n");
+                return -1;
             }
         }
-        printf("keyHandler, collisionCheckerValue %d\n",collision);
     } else if (c == 'w'){ // Player want to pass (w-WAIT)
-        return;
-        //wait(c, map, player);
     } else if (c == 'b'){// Player want to pose a bomb
         poseBomb(map, player);
     } else {
         printf("Invalid Key pressed\n choose between the following actions:\n Move: z (NORTH), s (SOUTH), d (EAST), q (WEST);\n Action: w (WAIT), b (BOMB);\n");
+        return -1;
     }
+    return 0;
 }

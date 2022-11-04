@@ -1,12 +1,12 @@
 1
 15 10
 xxxxxxxxxxxxxxx
-xp0         0px
-x0&         &0x
+xpO         Opx
+xO&         &Ox
 x             x
-x    0000     x
-x    0000     x
+x    OOOO     x
+x    OOOO     x
 x             x
-x0&         &0x
-xp0         0px
+xO&         &Ox
+xpO         Opx
 xxxxxxxxxxxxxxx

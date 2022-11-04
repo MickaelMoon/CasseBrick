@@ -3,6 +3,8 @@
 #ifndef MAP_H
 #define MAP_H
 
+void afficherSerializedMap(char * map);
+char * serializeMap(Map * map);
 void afficherMap(Map * map);
 char **initialiseTab(int rows, int columns);
 int nbPlayerMaxPerMap(char * filepath);
