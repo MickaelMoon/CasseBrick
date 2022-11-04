@@ -6,7 +6,6 @@
 
 void itemGenerator(Map * map, int x, int y){
     int r = rand()%100;
-    //printf("%d\n",r);
     char item;
     if (r < 50){
         item = ' '; //Nothing dropped
@@ -37,7 +36,7 @@ void itemGenerator(Map * map, int x, int y){
 }
 
 void removeBomb(Bomb *bomb, Map * map){
-        printf("nbBombLaunched: %d\n",bomb->player->currentNumberOfBombsLaunched);
+        //printf("nbBombLaunched: %d\n",bomb->player->currentNumberOfBombsLaunched);
 
     for (int i = 0; i < map->nbBombsOnMap; i++){
         if (bomb == map->bombList[i]){ //get the index of the exploding bomb
@@ -49,15 +48,15 @@ void removeBomb(Bomb *bomb, Map * map){
             }
             map->nbBombsOnMap--;
             map->bombList[map->nbBombsOnMap] = NULL; //remove the exploded bomb from the array
-                printf("nbBombLaunched: %d\n",bomb->player->currentNumberOfBombsLaunched);
+                //printf("nbBombLaunched: %d\n",bomb->player->currentNumberOfBombsLaunched);
 
             break;
         }
     }
-    printf("updated bombList:\n");
+    /*printf("updated bombList:\n");
     for(int i = 0; i < map->nbBombsOnMap; i++ ){
         printf("Bombe %d, joueur %c, timer %d\n", map->bombList[i]->id, map->bombList[i]->player->token, map->bombList[i]->timer);
-    }
+    }*/
 }
 
 void explosion(Bomb * bomb, Map *map){
@@ -90,6 +89,8 @@ void explosion(Bomb * bomb, Map *map){
                                 playerHit->life--;
                             } else {
                                 playerHit->status = isDead;
+                                playerHit->x = -1;
+                                playerHit->y = -1;
                                 for (int z = 0; z < map->nbBombsOnMap;z++){
                                     if (map->bombList[z]->x == i && map->bombList[z]->y == Y){
                                         explosion(map->bombList[z], map);
@@ -138,6 +139,8 @@ void explosion(Bomb * bomb, Map *map){
                                 playerHit->life--;
                             } else {
                                 playerHit->status = isDead;
+                                playerHit->x = -1;
+                                playerHit->y = -1;
                                 for (int z = 0; z < map->nbBombsOnMap;z++){
                                     if (map->bombList[z]->x == i && map->bombList[z]->y == Y){
                                         explosion(map->bombList[z], map);
@@ -184,6 +187,8 @@ void explosion(Bomb * bomb, Map *map){
                                 playerHit->life--;
                             } else {
                                 playerHit->status = isDead;
+                                playerHit->x = -1;
+                                playerHit->y = -1;
                                 for (int z = 0; z < map->nbBombsOnMap;z++){
                                     if (map->bombList[z]->x == X && map->bombList[z]->y == i){
                                         explosion(map->bombList[z], map);
@@ -230,6 +235,8 @@ void explosion(Bomb * bomb, Map *map){
                                 playerHit->life--;
                             } else {
                                 playerHit->status = isDead;
+                                playerHit->x = -1;
+                                playerHit->y = -1;
                                 for (int z = 0; z < map->nbBombsOnMap;z++){
                                     if (map->bombList[z]->x == X && map->bombList[z]->y == i){
                                         explosion(map->bombList[z], map);
@@ -257,18 +264,5 @@ void explosion(Bomb * bomb, Map *map){
     if (map->playerList[0]->socket != -1){
         sendAll(map->playerList,map->nbPlayers, serializeMap(map));
     }
-    for (int i = 0; i < map->rows; i++) {
-        for (int j = 0; j < map->columns; j++) {
-            if (map->tab[i][j] == 'F'){
-                map->tab[i][j] = ' ';
-            }
-        }
-    }
     map->pause = 1;
-    /*system("clear");
-    afficherMap(map);
-    if (map->playerList[0]->socket != -1){
-        sendAll(map->playerList,map->nbPlayers, serializeMap(map));
-    }
-    sleep(0.1);*/
 }

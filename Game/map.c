@@ -152,7 +152,6 @@ Player * initPlayer(int i){
     } else {
         player->status = waiting;
     }*/
-    player->bombMax = 1;
     player->currentNumberOfBombsLaunched = 0;
     player->bombKick = 0;
     player->firePower = 2;
@@ -291,6 +290,7 @@ Map * initMap(char * filePath){
                 playerList[index] = initPlayer(index);
                 playerList[index]->x = j;
                 playerList[index]->y = i;
+                playerList[index]->bombMax = map->bombMin;
                 map->tab[i][j] = playerList[index]->token;
                 index++;
             }
@@ -319,6 +319,10 @@ void updateTimerBomb(Map * map, Player * player){
         if (map->bombList[i]->timer == 0){
             explosion(map->bombList[i], map);
         }
+    }
+    printf("updated bombList:\n");
+    for(int i = 0; i < map->nbBombsOnMap; i++ ){
+        printf("Bombe %d, joueur %c, timer %d\n", map->bombList[i]->id, map->bombList[i]->player->token, map->bombList[i]->timer);
     }
 
 }

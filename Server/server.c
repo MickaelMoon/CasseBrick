@@ -123,7 +123,6 @@ static void app(void)
             clients[actual] = c;
             actual++;
             printf("Waiting for %d player(s).\n",MAX_CLIENTS-actual);
-            c.playerToken = actual+'0';
          }
       /* le fichier modifié n'est ni STDIN_FILLO, ni le socket serveur, c'est donc un socket client qui nous a envoyé un message */
       } else { //pas encore assez de joueurs connectés au serveur
@@ -170,11 +169,18 @@ static void app(void)
             Map * map = initMap(filePath);
             game->currentMap = map;
             startOfMap = 0;
+            char buffer1[1024];
 
             for (int i = 0; i < MAX_CLIENTS; i++){
+               char temp[60];
                map->playerList[i]->socket = clients[i].sock;
                clients[i].playerToken = map->playerList[i]->token;
-            }     
+               sprintf(temp,"Player %c is %s.\n",clients[i].playerToken, clients[i].name);
+               strcat(buffer1,temp);
+            }
+            sendAll(map->playerList,actual,"  ");
+            sendAll(map->playerList,actual,buffer1);
+            sleep(5);
          }
          Map * map = game->currentMap;
          char action;
@@ -211,6 +217,7 @@ static void app(void)
             while(currentPlayerhasPlayed == 0)
             {
                FD_ZERO(&rdfs);
+               FD_SET(STDIN_FILENO, &rdfs);
 
                /* add socket of each client */
                for(int i = 0; i < actual; i++)
@@ -223,6 +230,13 @@ static void app(void)
                {
                   perror("select()");
                   exit(errno);
+               }
+               
+               if(FD_ISSET(STDIN_FILENO, &rdfs))
+               {
+                  /* stop process when type on keyboard */
+                  continuer = 0;
+                  return ;
                }
 
                for(int i = 0; i < actual; i++)

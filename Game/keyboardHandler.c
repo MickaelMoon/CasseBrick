@@ -132,7 +132,7 @@ Bomb * initBomb(Player * player){
     return bomb;
 };
 
-void poseBomb(Map * map, Player * player){
+int poseBomb(Map * map, Player * player){
     printf("nbBombLaunched: %d\n",player->currentNumberOfBombsLaunched);
 
     if (player->currentNumberOfBombsLaunched < player->bombMax){
@@ -152,11 +152,13 @@ void poseBomb(Map * map, Player * player){
             printf("nbBombLaunched: %d\n",player->currentNumberOfBombsLaunched);
         } else {
             printf("a bomb is already on this tile\n");
+            return -1;
         }
     } else {
         printf("Maximum bombs already launched!\n");
+        return -1;
     }
-    
+    return 0;
 }
 
 int keyHandler(char c, Map * map, Player * player) {
@@ -180,7 +182,7 @@ int keyHandler(char c, Map * map, Player * player) {
         }
     } else if (c == 'w'){ // Player want to pass (w-WAIT)
     } else if (c == 'b'){// Player want to pose a bomb
-        poseBomb(map, player);
+        return poseBomb(map, player);
     } else {
         printf("Invalid Key pressed\n choose between the following actions:\n Move: z (NORTH), s (SOUTH), d (EAST), q (WEST);\n Action: w (WAIT), b (BOMB);\n");
         return -1;

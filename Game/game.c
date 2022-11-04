@@ -215,7 +215,7 @@ void launchGame(int mode){
             else {
                 currentPlayer = map->playerList[turn%map->nbPlayers];
                 //printf("nb Bomb on field: %d\n", map->nbBombsOnMap);
-                printf("\nPlayer %c status:\nMax bomb: %d / Fire Pwr: %d\nPasseBomb: %d / BombKick: %d\nInvincibility: %d turn(s)\nHeart Shield: %d / Life(s): %d\n", currentPlayer->token, currentPlayer->bombMax, currentPlayer->firePower, currentPlayer->passBombs, currentPlayer->bombKick, currentPlayer->invincibilityTime, currentPlayer->heart, currentPlayer->life);
+                //printf("\nPlayer %c status:\nMax bomb: %d / Fire Pwr: %d\nPasseBomb: %d / BombKick: %d\nInvincibility: %d turn(s)\nHeart Shield: %d / Life(s): %d\n", currentPlayer->token, currentPlayer->bombMax, currentPlayer->firePower, currentPlayer->passBombs, currentPlayer->bombKick, currentPlayer->invincibilityTime, currentPlayer->heart, currentPlayer->life);
 
             printf("\nDo something, Player %c:\n",currentPlayer->token);
             int c;
@@ -233,10 +233,18 @@ void launchGame(int mode){
             do { 
                     c = getchar(); 
                 } while (c != '\n' && c != EOF);
+            afficherMap(map);
             updateTimerBomb(map, currentPlayer);
             if (map->pause){
                 sleep(3);
                 map->pause = 0;
+                for (int i = 0; i < map->rows; i++) {
+                    for (int j = 0; j < map->columns; j++) {
+                        if (map->tab[i][j] == 'F'){
+                            map->tab[i][j] = ' ';
+                        }
+                    }
+                }
             }
             system("clear");
             afficherMap(map);

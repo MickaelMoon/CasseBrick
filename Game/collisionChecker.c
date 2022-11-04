@@ -33,7 +33,7 @@ void pickItem(char item, Player * player){
             player->bombKick = 1;
             break;  
         case '*': //Invincibility
-            player->invincibilityTime = 2;
+            player->invincibilityTime = 3;
             break;
         case '#': //Heart
             if (player->heart == 0){ //No heart already picked up
