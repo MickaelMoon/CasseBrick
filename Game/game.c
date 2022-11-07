@@ -14,6 +14,7 @@
 #include "../Client/client.h"
 
 
+
 Game * initGame(int mode){
     Game * game = malloc(sizeof(Game));
     game->status = mode;
@@ -43,39 +44,24 @@ Game * initGame(int mode){
 
 
 do {
-   system("clear");
+    #ifdef WIN32
+    system("cls");
+    #else
+    system("clear");
+    #endif
    printf("Which map would you like in this game pool?\n");
    printf("Choices are:\n");
    if (nb4playerMaps == 0){
         printf("2 players maps available:\n");
         for (int i = 0; i < 3; i++){
-            int j = 0;
-            int alreadyChosen = 0;
-            while (j < nb2playerMaps){
-                if (map2Players[i] == pendingMaps[j]){
-                    alreadyChosen = 1;
-                }
-                j++;
-            }
-            if (!alreadyChosen){
-                printf("%s",map2Players[i]);
-            }
+            printf("%s",map2Players[i]);
         }
     printf("\n");
    }
    if (nb2playerMaps == 0){
         printf("4 players maps:\n");
         for (int i = 0; i < 4; i++){
-            int j = 0;
-            int alreadyChosen = 0;
-            while (j < nb4playerMaps){
-                if (map4Players[i] == pendingMaps[j]){
-                    alreadyChosen = 1;
-                }
-                j++;
-            }
-            if (!alreadyChosen)
-                printf("%s",map4Players[i]);
+            printf("%s",map4Players[i]);
         }
     printf("\n");
    }
@@ -167,13 +153,13 @@ do {
     return game;
 }
 
+//Solo or multiplayer game on same Machine (not server)
 void launchGame(int mode){
 
     Game *game = initGame(mode);
     srand(time(NULL));
     int randomfilePath = -1;
     int previousFilePath = -1;
-    //boucle while Do you want to play next map ? Yes all player/ or quit/wait other player
 
     /*MAP GENERATED*/
 
@@ -201,7 +187,11 @@ void launchGame(int mode){
                 } while (c != '\n' && c != EOF);
         char action;
 
+        #ifdef WIN32
+        system("cls");
+        #else
         system("clear");
+        #endif
         int turn = 0;
         afficherMap(map);
             Player * currentPlayer;
@@ -214,9 +204,7 @@ void launchGame(int mode){
                     turn++ */
             else {
                 currentPlayer = map->playerList[turn%map->nbPlayers];
-                //printf("nb Bomb on field: %d\n", map->nbBombsOnMap);
-                //printf("\nPlayer %c status:\nMax bomb: %d / Fire Pwr: %d\nPasseBomb: %d / BombKick: %d\nInvincibility: %d turn(s)\nHeart Shield: %d / Life(s): %d\n", currentPlayer->token, currentPlayer->bombMax, currentPlayer->firePower, currentPlayer->passBombs, currentPlayer->bombKick, currentPlayer->invincibilityTime, currentPlayer->heart, currentPlayer->life);
-
+               
             printf("\nDo something, Player %c:\n",currentPlayer->token);
             int c;
 
@@ -246,7 +234,11 @@ void launchGame(int mode){
                     }
                 }
             }
+            #ifdef WIN32
+            system("cls");
+            #else
             system("clear");
+            #endif
             afficherMap(map);
             turn++;
             if (currentPlayer->invincibilityTime != 0){

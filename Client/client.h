@@ -4,6 +4,7 @@
 #ifdef WIN32
 
 #include <winsock2.h>
+#define STDIN_FILENO 0
 
 #elif defined (linux)
 

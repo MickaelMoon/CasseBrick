@@ -21,7 +21,7 @@ int main() {
         case 2:
             // voir parameters
             launchServer();
-            break; //see if remove break to launch server & client as the server would like to play too
+            break;
         case 3:
             char **argv = malloc(sizeof(char*)*2);
             argv[0] = malloc(sizeof(char)*20);

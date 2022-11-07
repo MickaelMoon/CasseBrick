@@ -6,7 +6,6 @@
 
 void afficherSerializedMap(char * map){
     setlocale(LC_ALL, "");
-
     for (int i = 0; i < strlen(map); i++) {
         if (map[i] == 'x'){
             printf("%lc",0x2593);
@@ -50,7 +49,14 @@ void afficherMap(Map * map){
             map->tab[y][x] = 'B';
         }
     }
-
+#ifdef WIN32
+    for (int i = 0; i < map->rows; i++){
+        for (int j = 0; j < map->columns; j++){
+            printf("%c",map->tab[i][j]);
+        }
+        printf("\n");
+    }
+#elif defined (linux)
     for (int i = 0; i < map->rows; i++) {
         for (int j = 0; j < map->columns; j++) {
             if (map->tab[i][j] == 'x'){
@@ -86,6 +92,7 @@ void afficherMap(Map * map){
         }
         printf("\n");
     }
+#endif
 }
 
 char * serializeMap(Map * map){
@@ -98,19 +105,16 @@ char * serializeMap(Map * map){
             map->tab[y][x] = 'B';
         }
     }
-
+    int index = 0;
     for (int i = 0; i < map->rows; i++) {
         for (int j = 0; j < map->columns; j++) {
-            char cToStr[2];
-            cToStr[0] = map->tab[i][j];
-            cToStr[1] ='\0';
-            strcat(buffer,cToStr);
+            buffer[index] = map->tab[i][j];
+            index++;
         }
-        char cToStr[2];
-        cToStr[0] = '\n';
-        cToStr[1] ='\0';
-        strcat(buffer,cToStr);
+        buffer[index] = '\n';
+        index++;
     }
+    buffer[index] = '\0';
     return buffer;
 }
 
@@ -205,7 +209,6 @@ int nbPlayerMaxPerMap(char * filepath){
 }
 
 void recupData(char *filepath, Map * map){
-    printf("%s\n",filepath);
     FILE *f = fopen(filepath, "r");
     int nbPlayers = 0;
 

@@ -14,24 +14,28 @@
 #include "../Game/game.h"
 #include "../Game/map.h"
 
+#ifdef WIN32
+#elif defined (linux)
+#endif
+
 static void init(void)
 {
-#ifdef WIN32
-   WSADATA wsa;
-   int err = WSAStartup(MAKEWORD(2, 2), &wsa);
-   if(err < 0)
-   {
-      puts("WSAStartup failed !");
-      exit(EXIT_FAILURE);
-   }
-#endif
+   #ifdef WIN32
+      WSADATA wsa;
+      int err = WSAStartup(MAKEWORD(2, 2), &wsa);
+      if(err < 0)
+      {
+         puts("WSAStartup failed !");
+         exit(EXIT_FAILURE);
+      }
+   #endif
 }
 
 static void end(void)
 {
-#ifdef WIN32
-   WSACleanup();
-#endif
+   #ifdef WIN32
+      WSACleanup();
+   #endif
 }
 
 static void app(void)
@@ -39,7 +43,6 @@ static void app(void)
    Game *game = initGame(1);
 
    int MAX_CLIENTS = game->nbMaxPlayer;
-
    // sock = socket serveur
    SOCKET sock = init_connection(MAX_CLIENTS);
    char buffer[BUF_SIZE];
@@ -63,8 +66,9 @@ static void app(void)
       FD_ZERO(&rdfs);
 
       /* add STDIN_FILENO */
-      FD_SET(STDIN_FILENO, &rdfs);
-
+      #ifdef linux
+         FD_SET(STDIN_FILENO, &rdfs);
+      #endif
       /* add the connection socket */
       FD_SET(sock, &rdfs);
 
@@ -73,23 +77,26 @@ static void app(void)
       {
          FD_SET(clients[i].sock, &rdfs);
       }
-
+      sleep(3);
       //Select permet d'attendre que rdfs soit modifié (données en lecture possibles), et lorsque c'est le cas, la suite du programme se déroule
       if(select(max + 1, &rdfs, NULL, NULL, NULL) == -1)
       {
+/**/     sleep(3);
          perror("select()");
          exit(errno);
       }
-
+/**/  sleep(3);
       /* something from standard input : i.e keyboard 
       si le fichier modifié est STDIN_FILENO, cela veut dire que l'on a ecrit quelque chose dans la console serveur, ce qui est notre condition d'arret du serveur */
+      #ifdef linux
       if(FD_ISSET(STDIN_FILENO, &rdfs))
       {
-         /* stop process when type on keyboard */
+         // stop process when type on keyboard
          break;
       }
+      #endif
       /* si sock est un fichier modifié, cela veut dire qu'il a reçu une demande de connexion*/
-      else if(FD_ISSET(sock, &rdfs))
+      /*else */if(FD_ISSET(sock, &rdfs))
       {
          /* new client */
          SOCKADDR_IN csin = { 0 };
@@ -178,14 +185,19 @@ static void app(void)
                sprintf(temp,"Player %c is %s.\n",clients[i].playerToken, clients[i].name);
                strcat(buffer1,temp);
             }
+            #ifdef linux
             sendAll(map->playerList,actual,"  ");
             sendAll(map->playerList,actual,buffer1);
             sleep(5);
+            #endif
          }
          Map * map = game->currentMap;
          char action;
-
-        system("clear");
+         #ifdef WIN32
+         system("cls");
+         #else
+         system("clear");
+         #endif
         int turn = 0;
          Player * currentPlayer;
 
@@ -196,7 +208,11 @@ static void app(void)
                     botTurn() --Algo IA
                     turn++ */
             else {
+               #ifdef WIN32
+               system("cls");
+               #else
                system("clear");
+               #endif
                afficherMap(map);
                sendAll(map->playerList, MAX_CLIENTS,serializeMap(map));
                sleep(0.1);
@@ -211,14 +227,16 @@ static void app(void)
                      write_client(map->playerList[i]->socket,buffer);
                   }
                 }
-            sprintf(buffer,"\nDo something, Player %c:\n",currentPlayer->token);
+                sleep(1);
+            sprintf(buffer,"Do something, Player %c:\n",currentPlayer->token);
             write_client(currentPlayer->socket,buffer);
             int currentPlayerhasPlayed = 0;
             while(currentPlayerhasPlayed == 0)
             {
                FD_ZERO(&rdfs);
+               #ifdef linux
                FD_SET(STDIN_FILENO, &rdfs);
-
+               #endif
                /* add socket of each client */
                for(int i = 0; i < actual; i++)
                {
@@ -232,12 +250,14 @@ static void app(void)
                   exit(errno);
                }
                
+               #ifdef linux
                if(FD_ISSET(STDIN_FILENO, &rdfs))
                {
-                  /* stop process when type on keyboard */
+                  // stop process when type on keyboard
                   continuer = 0;
                   return ;
                }
+               #endif
 
                for(int i = 0; i < actual; i++)
                {
@@ -368,6 +388,7 @@ static void remove_client(Client *clients, int to_remove, int *actual)
 }
 
 void sendAll(Player **clients, int actual, const char *buffer){
+   printf("%s",buffer);
    int i = 0;
    char message[BUF_SIZE];
    message[0] = 0;
@@ -463,10 +484,9 @@ static void write_client(SOCKET sock, const char *buffer)
 int launchServer()
 {
    init();
-
    app();
-
    end();
+   sleep(3);
 
    return EXIT_SUCCESS;
 }

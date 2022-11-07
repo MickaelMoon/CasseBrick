@@ -6,6 +6,10 @@
 #include "client.h"
 #include "../Game/map.h"
 
+#ifdef WIN32
+#elif defined (linux)
+#endif
+
 static void init(void)
 {
 #ifdef WIN32
@@ -41,7 +45,9 @@ static void app(const char *address, const char *name)
       FD_ZERO(&rdfs);
 
       /* add STDIN_FILENO */
+      #ifdef linux
       FD_SET(STDIN_FILENO, &rdfs);
+      #endif
 
       /* add the socket */
       FD_SET(sock, &rdfs);
@@ -53,6 +59,7 @@ static void app(const char *address, const char *name)
       }
 
       /* something from standard input : i.e keyboard */
+      #ifdef linux
       if(FD_ISSET(STDIN_FILENO, &rdfs))
       {
          fgets(buffer, BUF_SIZE - 1, stdin);
@@ -65,19 +72,17 @@ static void app(const char *address, const char *name)
             }
             else
             {
-               /* fclean */
+               // fclean
                buffer[BUF_SIZE - 1] = 0;
             }
          }
          write_server(sock, buffer);
       }
-      else if(FD_ISSET(sock, &rdfs))
+      else
+      #endif
+      if(FD_ISSET(sock, &rdfs))
       {
          int n = read_server(sock, buffer);
-         char * clear = "clear";
-         char * map1 = "  ";
-         char * map2 = "xx";
-         char * map3 = "mm";
 
          /* server down */
          if(n == 0)
@@ -85,15 +90,29 @@ static void app(const char *address, const char *name)
             printf("Server disconnected !\n");
             break;
          }
-         /*if (strncmp(buffer,clear,5) == 0){
-            system("clear"); 
-         } else */if (buffer[0] == ' ' || buffer[0] == 'x' || buffer[0] == 'm') {
+         if (buffer[0] == ' ' || buffer[0] == 'x' || buffer[0] == 'm') {
+            #ifdef WIN32
+            system("cls");
+            printf("%s",buffer);
+            #else
             system("clear");
             afficherSerializedMap(buffer);
+            #endif
          }
          else {
-            for (int i = 0; i < n; i++){
-               printf("%c",buffer[i]);
+            if (buffer[0] == 'D' || buffer[0] == 'M'){
+               printf("%s",buffer);
+               
+            #ifdef WIN32
+              char c[2];
+              do { 
+                c[0] = getchar(); 
+              } while (c[0] != '\n' && c[0] != EOF);
+              scanf("%c",&c[0]);
+              write_server(sock, c);
+            #endif
+            } else {
+               printf("%s",buffer);
             }
          }
       }
