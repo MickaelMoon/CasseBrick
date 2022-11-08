@@ -94,9 +94,10 @@ static void app(void)
          // stop process when type on keyboard
          break;
       }
+      else
       #endif
       /* si sock est un fichier modifié, cela veut dire qu'il a reçu une demande de connexion*/
-      /*else */if(FD_ISSET(sock, &rdfs))
+      if(FD_ISSET(sock, &rdfs))
       {
          /* new client */
          SOCKADDR_IN csin = { 0 };
@@ -173,7 +174,7 @@ static void app(void)
             }
             char *filePath = game->filePathMapChoosen[randomfilePath];
 
-            Map * map = initMap(filePath);
+            Map * map = initMap(filePath, multiplayer, 0);
             game->currentMap = map;
             startOfMap = 0;
             char buffer1[1024];
@@ -186,7 +187,6 @@ static void app(void)
                strcat(buffer1,temp);
             }
             #ifdef linux
-            sendAll(map->playerList,actual,"  ");
             sendAll(map->playerList,actual,buffer1);
             sleep(5);
             #endif
@@ -388,7 +388,7 @@ static void remove_client(Client *clients, int to_remove, int *actual)
 }
 
 void sendAll(Player **clients, int actual, const char *buffer){
-   printf("%s",buffer);
+   //printf("%s",buffer);
    int i = 0;
    char message[BUF_SIZE];
    message[0] = 0;

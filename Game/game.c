@@ -12,12 +12,13 @@
 #include "map.h"
 #include "../Server/server.h"
 #include "../Client/client.h"
+#include "bot.h"
 
 
 
-Game * initGame(int mode){
+Game * initGame(int nbHumanPlayers){
     Game * game = malloc(sizeof(Game));
-    game->status = mode;
+    game->nbHumanPlayers = nbHumanPlayers;
 
     char ** mapChoosen = malloc(sizeof(char*)*6); //let say 6 maps max to be choosen
     for (int i = 0; i < 6; i++){
@@ -154,9 +155,10 @@ do {
 }
 
 //Solo or multiplayer game on same Machine (not server)
-void launchGame(int mode){
+void launchGame(int nbHumanPlayers){
 
-    Game *game = initGame(mode);
+    Game *game = initGame(nbHumanPlayers);
+    game->status = soloplayer;
     srand(time(NULL));
     int randomfilePath = -1;
     int previousFilePath = -1;
@@ -175,7 +177,7 @@ void launchGame(int mode){
         }
         char *filePath = game->filePathMapChoosen[randomfilePath];
 
-        Map * map = initMap(filePath);
+        Map * map = initMap(filePath, game->status,game->nbHumanPlayers);
         game->currentMap = map;
    /* */
 
@@ -197,13 +199,16 @@ void launchGame(int mode){
             Player * currentPlayer;
 
         do{
-            if (map->playerList[turn%map->nbPlayers]->status == isDead){
+            currentPlayer = map->playerList[turn%map->nbPlayers];
+
+            if (currentPlayer->status == isDead){
                 turn++;
-            } /* elsif player->isBot == true
-                    botTurn() --Algo IA
-                    turn++ */
+            }else if (currentPlayer->status == isBot){
+                action = botNextMove(map, currentPlayer);
+                printf("BotAction: %c\n", action);
+                keyHandler(action, map, currentPlayer);
+            }
             else {
-                currentPlayer = map->playerList[turn%map->nbPlayers];
                
             printf("\nDo something, Player %c:\n",currentPlayer->token);
             int c;
@@ -221,6 +226,7 @@ void launchGame(int mode){
             do { 
                     c = getchar(); 
                 } while (c != '\n' && c != EOF);
+            }
             afficherMap(map);
             updateTimerBomb(map, currentPlayer);
             if (map->pause){
@@ -244,7 +250,7 @@ void launchGame(int mode){
             if (currentPlayer->invincibilityTime != 0){
                 currentPlayer->invincibilityTime--;
             }
-            }
+            
         } while (map->nbPlayerAlive > 1);
    /* */
 }

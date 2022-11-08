@@ -93,6 +93,15 @@ void afficherMap(Map * map){
         printf("\n");
     }
 #endif
+
+    /*printf("DangerMap\n");
+        for (int i = 0; i < map->rows; ++i) {
+            for (int j = 0; j < map->columns; j++){
+                printf("%d",map->dangerMap[i][j]);
+            }
+            printf("\n");
+        }
+    */
 }
 
 char * serializeMap(Map * map){
@@ -268,7 +277,7 @@ void recupData(char *filepath, Map * map){
     map->tab = tab;
 }
 
-Map * initMap(char * filePath){
+Map * initMap(char * filePath, int mode, int nbHumanPlayers){
     Map * map = malloc(sizeof(Map));
     map->columns;
     map->rows;
@@ -300,9 +309,81 @@ Map * initMap(char * filePath){
         }
     }
 
+    if (mode == soloplayer){
+        for (int i = nbHumanPlayers; i < map->nbPlayers; i++){ // modifier i pour ajuster le nombre de Bots (i = nombres de joueurs humain)
+            playerList[i]->status = isBot;
+            printf("Player %c is a bot (%d)\n",playerList[i]->token,playerList[i]->status);
+        }
+    }
+
     map->playerList = playerList;
+    char ** dangerMap = calloc(map->rows, sizeof(char *));
+
+    for (int i = 0; i < map->rows; ++i) {
+        dangerMap[i] = calloc(map->columns, sizeof(char));
+    }
+
+    map->dangerMap = dangerMap;
 
     return map;
+}
+
+void updateDangerMap(Map *map){
+    for (int i = 0; i < map->rows; i++){
+        for (int j = 0; j < map->columns; j++){
+            map->dangerMap[i][j] = 0;
+        }
+    }
+    for (int z = 0; z < map->nbBombsOnMap; z++){
+        Bomb * bomb = map->bombList[z];
+        int X = bomb->x;
+        int Y = bomb ->y;
+        map->dangerMap[Y][X] = 1;
+        // explosion to the right
+        for (int i = X, k = 0; k <= bomb->player->firePower; i++, k++){
+            if (i == map->columns){
+                i = 0;
+            }
+            if (map->tab[Y][i] == 'x' || map->tab[Y][i] == 'm') {
+                break;
+            } else {
+                map->dangerMap[Y][i] = 1;
+            }
+        }
+        // explosion to the left
+        for (int i = X, k = 0; k <= bomb->player->firePower; i--, k++){
+            if (i < 0){
+                i = map->columns-1;
+            }
+            if (map->tab[Y][i] == 'x' || map->tab[Y][i] == 'm') {
+                break;
+            } else {
+                map->dangerMap[Y][i] = 1;
+            }
+        }
+        // explosion to the top
+        for (int i = Y, k = 0; k <= bomb->player->firePower; i--, k++){
+            if (i < 0){
+                i = map->rows-1;
+            }
+            if (map->tab[i][X] == 'x' || map->tab[i][X] == 'm') {
+                break;
+            } else {
+                map->dangerMap[i][X] = 1;
+            }
+        }
+        // explosion to the bottom
+        for (int i = Y, k = 0; k <= bomb->player->firePower; i++, k++){
+            if (i == map->rows){
+                i = 0;
+            }
+            if (map->tab[i][X] == 'x' || map->tab[i][X] == 'm') {
+                break;
+            } else {
+                map->dangerMap[i][X] = 1;
+            }
+        }
+    }
 }
 
 void updateTimerBomb(Map * map, Player * player){

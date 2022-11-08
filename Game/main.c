@@ -7,7 +7,7 @@
 
 int main() {
 
-    printf("Welcome To Bomberm... Casse Brique Game ! (developped by Kanomi)\nPlease choose your play Mode:\n1) Start Solo Game\n2) Start a server\n3) Join a server\n");
+    printf("Welcome To Bomberm... Casse Brique Game ! (developped by Kanomi)\nPlease choose your play Mode:\n1) Start Local Game\n2) Start a server\n3) Join a server\n");
     int startingChoice;
     do{
         printf("Choice number ?\n");
@@ -16,7 +16,15 @@ int main() {
 
     switch(startingChoice){
         case 1:
-            launchGame(1);
+        int nbHumanPlayers = 0;
+            do{
+                printf("How many human players ?\n");
+                do { 
+                    nbHumanPlayers = getchar(); 
+                } while (nbHumanPlayers != '\n' && nbHumanPlayers != EOF);
+                scanf("%d",&nbHumanPlayers);
+            } while (nbHumanPlayers != 1 && nbHumanPlayers != 2 && nbHumanPlayers != 3 && nbHumanPlayers != 4);
+            launchGame(nbHumanPlayers);
             break;
         case 2:
             // voir parameters

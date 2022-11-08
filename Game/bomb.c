@@ -4,6 +4,50 @@
 #include "map.h"
 #include "../Server/server.h"
 
+
+Bomb * initBomb(Player * player){
+    Bomb * bomb = malloc(sizeof(Bomb));
+    bomb->x = player->x;
+    bomb->y = player->y;
+    bomb->player = player;
+    bomb->player->currentNumberOfBombsLaunched++;
+    bomb->timer = 3;
+
+    return bomb;
+};
+
+int poseBomb(Map * map, Player * player){
+    printf("nbBombLaunched: %d\n",player->currentNumberOfBombsLaunched);
+
+    if (player->currentNumberOfBombsLaunched < player->bombMax){
+        int bombAlreadyOnTheTile = 0;
+        for (int i = 0; i < map->nbBombsOnMap; i++){
+            int x = map->bombList[i]->x;
+            int y = map->bombList[i]->y;
+            if (x == player->x && y == player->y){
+                bombAlreadyOnTheTile = 1;
+            }
+        }
+        if (bombAlreadyOnTheTile == 0){
+            map->bombList[map->nbBombsOnMap] = initBomb(player);
+            map->bombList[map->nbBombsOnMap]->id = map->nbBombsOnMap;
+            printf("x: %d, y: %d\n", map->bombList[map->nbBombsOnMap]->x, map->bombList[map->nbBombsOnMap]->y);
+            map->nbBombsOnMap++;
+            printf("nbBombLaunched: %d\n",player->currentNumberOfBombsLaunched);
+        } else {
+            printf("a bomb is already on this tile\n");
+            return -1;
+        }
+    } else {
+        printf("Maximum bombs already launched!\n");
+        return -1;
+    }
+    
+    updateDangerMap(map);
+
+    return 0;
+}
+
 void itemGenerator(Map * map, int x, int y){
     int r = rand()%100;
     char item;
@@ -53,10 +97,7 @@ void removeBomb(Bomb *bomb, Map * map){
             break;
         }
     }
-    /*printf("updated bombList:\n");
-    for(int i = 0; i < map->nbBombsOnMap; i++ ){
-        printf("Bombe %d, joueur %c, timer %d\n", map->bombList[i]->id, map->bombList[i]->player->token, map->bombList[i]->timer);
-    }*/
+    updateDangerMap(map);
 }
 
 void explosion(Bomb * bomb, Map *map){
@@ -258,6 +299,7 @@ void explosion(Bomb * bomb, Map *map){
             map->tab[i][X] = 'F';
         }
     }
+    
     system("clear");
 
     afficherMap(map);

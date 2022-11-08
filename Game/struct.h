@@ -2,9 +2,9 @@
 #define STRUCT_H
 
 typedef enum {
-    waiting = 0,
     isDead = 0,
     isPlaying = 1,
+    isBot = 2,
 } PlayerStatus;
 
 typedef enum {
@@ -42,6 +42,7 @@ typedef struct {
 
 typedef struct {
     char * pathFile;
+    char ** dangerMap;
     int columns;
     int rows;
     char ** tab;
@@ -58,6 +59,7 @@ typedef struct {
 typedef struct {
     GameStatus status;
     int nbMaxPlayer;
+    int nbHumanPlayers;
     char ** filePathMapChoosen;
     int nbOfMapsAvailable;
     Map * currentMap;

@@ -3,6 +3,8 @@
 #include "struct.h"
 #include "collisionChecker.h"
 #include "../Server/server.h"
+#include "map.h"
+#include "bomb.h"
 
 
 void move (char c, Map * map, Player * player){
@@ -119,46 +121,6 @@ void kickBomb (char c, Map * map, Player * player){
             bomb->x = (j-(decallage-1)+map->columns)%map->columns; //bomb item updated
             break;
     }
-}
-
-Bomb * initBomb(Player * player){
-    Bomb * bomb = malloc(sizeof(Bomb));
-    bomb->x = player->x;
-    bomb->y = player->y;
-    bomb->player = player;
-    bomb->player->currentNumberOfBombsLaunched++;
-    bomb->timer = 3;
-
-    return bomb;
-};
-
-int poseBomb(Map * map, Player * player){
-    printf("nbBombLaunched: %d\n",player->currentNumberOfBombsLaunched);
-
-    if (player->currentNumberOfBombsLaunched < player->bombMax){
-        int bombAlreadyOnTheTile = 0;
-        for (int i = 0; i < map->nbBombsOnMap; i++){
-            int x = map->bombList[i]->x;
-            int y = map->bombList[i]->y;
-            if (x == player->x && y == player->y){
-                bombAlreadyOnTheTile = 1;
-            }
-        }
-        if (bombAlreadyOnTheTile == 0){
-            map->bombList[map->nbBombsOnMap] = initBomb(player);
-            map->bombList[map->nbBombsOnMap]->id = map->nbBombsOnMap;
-            printf("x: %d, y: %d\n", map->bombList[map->nbBombsOnMap]->x, map->bombList[map->nbBombsOnMap]->y);
-            map->nbBombsOnMap++;
-            printf("nbBombLaunched: %d\n",player->currentNumberOfBombsLaunched);
-        } else {
-            printf("a bomb is already on this tile\n");
-            return -1;
-        }
-    } else {
-        printf("Maximum bombs already launched!\n");
-        return -1;
-    }
-    return 0;
 }
 
 int keyHandler(char c, Map * map, Player * player) {
