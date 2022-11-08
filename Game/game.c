@@ -135,7 +135,7 @@ do {
     //filePath constructor to aliment mapChoosen
    for (int i = 0; i < nbOfMapChoosen; i++){
     char str [40] = "./Maps/map";
-    str[9] = pendingMaps[i] + '0';
+    str[10] = pendingMaps[i] + '0';
     char end [5] = ".txt";
     strcat(str,end);
     strcpy(mapChoosen[i], str);
