@@ -134,7 +134,7 @@ do {
 
     //filePath constructor to aliment mapChoosen
    for (int i = 0; i < nbOfMapChoosen; i++){
-    char str [40] = "./Map/map";
+    char str [40] = "./Maps/map";
     str[9] = pendingMaps[i] + '0';
     char end [5] = ".txt";
     strcat(str,end);
@@ -142,7 +142,7 @@ do {
    }
    //Default map if nothing has been choosen
    if (nbOfMapChoosen == 0){
-    mapChoosen[0] = "./Map/map1.txt";
+    mapChoosen[0] = "./Maps/map1.txt";
     nbOfMapChoosen = 1;
     nb2playerMaps++;
    }
