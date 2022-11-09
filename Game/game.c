@@ -162,26 +162,33 @@ void launchGame(int nbHumanPlayers){
     srand(time(NULL));
     int randomfilePath = -1;
     int previousFilePath = -1;
+    int startOfMap = 1;
+    int continuer = 1;
 
     /*MAP GENERATED*/
+    while(continuer){
 
-        //generate a random filePath (different from previous one, except if only one map has been selected)
-        if (game->nbOfMapsAvailable == 1){
-            randomfilePath = 0;
-        } else {
-            do{
-                randomfilePath = rand()%game->nbOfMapsAvailable;
+        if (startOfMap){
+            //generate a random filePath (different from previous one, except if only one map has been selected)
+            if (game->nbOfMapsAvailable == 1){
+                randomfilePath = 0;
+            } else {
+                do{
+                    randomfilePath = rand()%game->nbOfMapsAvailable;
 
-            }while(randomfilePath == previousFilePath);
-            previousFilePath = randomfilePath;
+                }while(randomfilePath == previousFilePath);
+                previousFilePath = randomfilePath;
+            }
+            char *filePath = game->filePathMapChoosen[randomfilePath];
+
+            Map * map = initMap(filePath, game->status,game->nbHumanPlayers);
+            game->currentMap = map;
+            startOfMap = 0;
         }
-        char *filePath = game->filePathMapChoosen[randomfilePath];
-
-        Map * map = initMap(filePath, game->status,game->nbHumanPlayers);
-        game->currentMap = map;
    /* */
 
     /*PLAY START HERE*/
+        Map * map = game->currentMap;
         int c; 
         
         do { 
@@ -252,5 +259,19 @@ void launchGame(int nbHumanPlayers){
             }
             
         } while (map->nbPlayerAlive > 1);
+        char wish;
+        printf("Do you wish to continue ? y/n\n");
+        scanf("%c",&wish);
+        switch (wish){
+            case 'y':
+                startOfMap = 1;
+                break;
+            default:
+                continuer = 0;
+                printf("Thank you for playing. See you soon !\n");
+                sleep(3);
+                break;
+        }
+    }
    /* */
 }

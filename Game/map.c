@@ -404,9 +404,9 @@ void updateTimerBomb(Map * map, Player * player){
             explosion(map->bombList[i], map);
         }
     }
-    printf("updated bombList:\n");
+    /*printf("updated bombList:\n");
     for(int i = 0; i < map->nbBombsOnMap; i++ ){
         printf("Bombe %d, joueur %c, timer %d\n", map->bombList[i]->id, map->bombList[i]->player->token, map->bombList[i]->timer);
-    }
+    }*/
 
 }

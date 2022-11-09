@@ -162,7 +162,6 @@ static void app(void)
       while ((actual == MAX_CLIENTS) && continuer) // tous les joueurs nécessaires sont connectés au serveur
       {
          if (startOfMap){
-            printf("start of map\n");
             if (game->nbOfMapsAvailable == 1){
                randomfilePath = 0;
             } else {
