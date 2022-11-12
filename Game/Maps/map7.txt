@@ -2,11 +2,11 @@
 15 10
 xxxxxxxxxxxxxxx
 xpO         Opx
-xO&         &Ox
-x             x
-x    OOOO     x
-x    OOOO     x
-x             x
-xO&         &Ox
+xO& m     m &Ox
+x  mm     mm  x
+x    OOOOO    x
+x    OOOOO    x
+x  mm     mm  x
+xO& m     m &Ox
 xpO         Opx
 xxxxxxxxxxxxxxx

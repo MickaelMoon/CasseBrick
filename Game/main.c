@@ -40,6 +40,10 @@ int main() {
             scanf("%s", argv[1]);
 
             launchClient(2, argv);
+
+            free(argv[0]);
+            free(argv[1]);
+            free(argv);
             break;
     }
 

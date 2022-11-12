@@ -212,11 +212,11 @@ void launchGame(int nbHumanPlayers){
                 turn++;
             }else if (currentPlayer->status == isBot){
                 action = botNextMove(map, currentPlayer);
-                printf("BotAction: %c\n", action);
                 keyHandler(action, map, currentPlayer);
             }
             else {
-               
+            printf("\nPlayer %c status:\nMax bomb: %d / Fire Pwr: %d\nPasseBomb: %d / BombKick: %d\nInvincibility: %d turn(s)\nHeart Shield: %d / Life(s): %d\n", currentPlayer->token, currentPlayer->bombMax, currentPlayer->firePower, currentPlayer->passBombs, currentPlayer->bombKick, currentPlayer->invincibilityTime, currentPlayer->heart, currentPlayer->life);
+
             printf("\nDo something, Player %c:\n",currentPlayer->token);
             int c;
 
@@ -272,6 +272,15 @@ void launchGame(int nbHumanPlayers){
                 sleep(3);
                 break;
         }
+        for (int i = 0; i < map->nbPlayers; i++){
+            free(map->playerList[i]);
+        }
+        free(map->playerList);
+        for (int i = 0; i < map->nbBombsOnMap; i++){
+            free(map->bombList[i]);
+        }
+        free(map->bombList);
+        free(map);
     }
    /* */
 }

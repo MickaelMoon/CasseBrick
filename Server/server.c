@@ -361,9 +361,20 @@ static void app(void)
          startOfMap = 1;
       }
    }
+
    if (actual == MAX_CLIENTS){
       sendAll(game->currentMap->playerList, actual, "Thank you for playing. See you soon !\n");
       sleep(3);
+      for (int i = 0; i < game->currentMap->nbPlayers; i++){
+            free(game->currentMap->playerList[i]);
+        }
+        free(game->currentMap->playerList);
+        for (int i = 0; i < game->currentMap->nbBombsOnMap; i++){
+            free(game->currentMap->bombList[i]);
+        }
+        free(game->currentMap->bombList);
+        free(game->currentMap);
+        free(game);
    }
    clear_clients(clients, actual);
    end_connection(sock);

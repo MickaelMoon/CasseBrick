@@ -102,7 +102,9 @@ char botNextMove(Map *map, Player *player){
         finalMove = movePossibleButDangerous[rand()%nbDangerousChoices];
     } else {
         if (map->dangerMap[y][x] == 0){ //si la case actuelle n'est pas dangeureuse, on rajoute 2 options a tableau des choix surs
-            movePossible[nbChoices] = 'b';
+            if ( !((x == 1 && y == 1) || (x == map->columns-1 && y == 1) || (x == map->columns-1 && y == map->rows-1) || (x == 1 && y == map->rows-1)) ){
+                movePossible[nbChoices] = 'b';
+            }
             nbChoices++;
         }
         finalMove = movePossible[rand()%nbChoices];

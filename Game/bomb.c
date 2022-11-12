@@ -102,7 +102,7 @@ void removeBomb(Bomb *bomb, Map * map){
 
 void explosion(Bomb * bomb, Map *map){
     int X = bomb->x;
-    int Y = bomb ->y;
+    int Y = bomb->y;
     removeBomb(bomb, map);
     map->tab[Y][X] = 'F';
     // explosion to the right
@@ -307,4 +307,6 @@ void explosion(Bomb * bomb, Map *map){
         sendAll(map->playerList,map->nbPlayers, serializeMap(map));
     }
     map->pause = 1;
+    free(bomb);
+
 }

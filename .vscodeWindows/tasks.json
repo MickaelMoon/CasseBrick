@@ -2,8 +2,8 @@
     "tasks": [
         {
             "type": "cppbuild",
-            "label": "C/C++: gcc générer le fichier actif",
-            "command": "/usr/bin/gcc",
+            "label": "C/C++: gcc.exe générer le fichier actif",
+            "command": "C:\\msys64\\mingw64\\bin\\gcc.exe",
             "args": [
                 "-fdiagnostics-color=always",
                 "-g",
@@ -11,6 +11,7 @@
                 "../Server/*.c",
                 "../Client/*.c",
                 //"${workspaceFolder}/*.c",
+                "-lws2_32",
                 "-o",
                 "${fileDirname}/${fileBasenameNoExtension}"
             ],
