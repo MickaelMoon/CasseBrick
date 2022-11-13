@@ -16,7 +16,7 @@
 
 
 
-Game * initGame(int nbHumanPlayers){
+Game * initGame(int nbHumanPlayers, char * mapProvided){
     Game * game = malloc(sizeof(Game));
     game->nbHumanPlayers = nbHumanPlayers;
 
@@ -26,22 +26,26 @@ Game * initGame(int nbHumanPlayers){
     }
     int nbOfMapChoosen = 0;
     int mapChoice = -1;
+    int nb2playerMaps = 0;
+    int nb4playerMaps = 0;
 
-    const char *map2Players[3] = {
+    if (mapProvided == NULL){
+
+    const char *map2Players[4] = {
         [0] = "1: Classic | ",
         [1] = "2: CheeseMap | ",
-        [2] = "3: Duel | "
+        [2] = "3: Duel | ",
+        [3] = "4: Random Generated Map |"
     };
-    const char *map4Players[4] = {
-        [0] = "4: FullDestruction | ",
-        [1] = "5: CrossingBlades | ",
-        [2] = "6: SkullIsland | ",
-        [3] = "7: OverPowered | "
+    const char *map4Players[5] = {
+        [0] = "5: FullDestruction | ",
+        [1] = "6: CrossingBlades | ",
+        [2] = "7: SkullIsland | ",
+        [3] = "8: OverPowered | ",
+        [4] = "9: Random Generated Map |"
     };
     // pendingMaps stocks the numbers corresponding to the map selected. Make it easier to check duplicate. Final mapChoosen tab is build at the end of the process.
     int *pendingMaps = malloc(sizeof(int)*6);
-    int nb2playerMaps = 0;
-    int nb4playerMaps = 0;
 
 
 do {
@@ -54,14 +58,14 @@ do {
    printf("Choices are:\n");
    if (nb4playerMaps == 0){
         printf("2 players maps available:\n");
-        for (int i = 0; i < 3; i++){
+        for (int i = 0; i < 4; i++){
             printf("%s",map2Players[i]);
         }
     printf("\n");
    }
    if (nb2playerMaps == 0){
         printf("4 players maps:\n");
-        for (int i = 0; i < 4; i++){
+        for (int i = 0; i < 5; i++){
             printf("%s",map4Players[i]);
         }
     printf("\n");
@@ -85,7 +89,7 @@ do {
             c = getchar(); 
         } while (c != '\n' && c != EOF); 
         mapChoice = -1;
-    }while (scanf("%d",&mapChoice) != 1 || (mapChoice > 7 || mapChoice < 0) || (mapChoice > 3 && nb2playerMaps != 0) || (mapChoice < 4 && mapChoice > 0 && nb4playerMaps != 0));
+    }while (scanf("%d",&mapChoice) != 1 || (mapChoice > 9 || mapChoice < 0) || (mapChoice > 4 && nb2playerMaps != 0) || (mapChoice < 5 && mapChoice > 0 && nb4playerMaps != 0));
 
     // 0 finish the period of selection
     if (mapChoice == 0){
@@ -103,7 +107,7 @@ do {
     if (alreadySelected == 0){ //new map
         pendingMaps[nbOfMapChoosen] = mapChoice;
         nbOfMapChoosen++;
-        if (mapChoice == 1 || mapChoice == 2 || mapChoice == 3){
+        if (mapChoice == 1 || mapChoice == 2 || mapChoice == 3 || mapChoice == 4){
             nb2playerMaps++;
         } else {
             nb4playerMaps++;
@@ -120,7 +124,7 @@ do {
         }
         pendingMaps[nbOfMapChoosen-1] = -1; //remove the map selected
         nbOfMapChoosen--;
-        if (mapChoice == 1 || mapChoice == 2 || mapChoice == 3){
+        if (mapChoice == 1 || mapChoice == 2 || mapChoice == 3 || mapChoice == 4){
             nb2playerMaps--;
         } else {
             nb4playerMaps--;
@@ -146,18 +150,23 @@ do {
     nbOfMapChoosen = 1;
     nb2playerMaps++;
    }
+    game->nbMaxPlayer = nb2playerMaps > nb4playerMaps ? 2 : 4;
 
+    } else {
+        mapChoosen[0] = mapProvided;
+        nbOfMapChoosen = 1;
+        game->nbMaxPlayer = nbPlayerMaxPerMap(mapProvided);
+    }
    game->filePathMapChoosen = mapChoosen;
-   game->nbMaxPlayer = nb2playerMaps > nb4playerMaps ? 2 : 4;
    game->nbOfMapsAvailable = nbOfMapChoosen;
 
     return game;
 }
 
 //Solo or multiplayer game on same Machine (not server)
-void launchGame(int nbHumanPlayers){
+void launchGame(int nbHumanPlayers, char *mapProvided){
 
-    Game *game = initGame(nbHumanPlayers);
+    Game *game = initGame(nbHumanPlayers, mapProvided);
     game->status = soloplayer;
     srand(time(NULL));
     int randomfilePath = -1;
@@ -180,6 +189,12 @@ void launchGame(int nbHumanPlayers){
                 previousFilePath = randomfilePath;
             }
             char *filePath = game->filePathMapChoosen[randomfilePath];
+
+            if (filePath[10] == '4'){
+                generateProceduralMap(2);
+            } else if (filePath[10] == '9'){
+                generateProceduralMap(4);
+            }
 
             Map * map = initMap(filePath, game->status,game->nbHumanPlayers);
             game->currentMap = map;

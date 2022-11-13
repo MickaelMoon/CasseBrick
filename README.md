@@ -3,7 +3,7 @@ It was developped as part of a educative project, with a team of 2 junior develo
 The language used is C.
 
 It is a single/multiplayer game, where you try to be the last survivor by killing your opponents with bombs :bomb:. Numerous stats modificator  items :gift: will help you (or desserved you !) in this task.
-The game can be played with 1 to 4 "human" players. In case of solo play, 3 bots will be available and play the game with you (but dont expect them to be on your side :smiling_imp:
+The game can be played with 1 to 4 "human" players. In case of local play, you can play with your friends on the same computer, or with up to 3 bots (but dont expect them to be on your side :smiling_imp:)
 
 
 ##Prerequisite
@@ -11,6 +11,7 @@ As the programme is coded with C language, you need a compilator to compile and 
 For linux users, please use GCC.
 For windows users, use MinGW or Mingw32.
 Regarding the IDE, the choice is yours as long as they support one of the previous compilators.
+Install the program make.
 
 
 ##Installation
@@ -20,18 +21,50 @@ Just download the file Casse-Brique.tar provided, and extracted it in the folder
 To play our game, it is mendatory to compile the game in an executable form.
 As minGW provided the same command line than gcc, the deployment procedure for linux and windows user is the same.
 Please follow the next steps:
-- navigate to the root of the project and go in the folder named Game
-- use the command:
-	gcc -o CasseBrique ./Client/*.c ./Game/*.c ./Server/*.c
+- navigate to the root of the project named CasseBrick
+- execute the command make
 - execute the file:
-	./CasseBrique
+	./CasseBrick <opt: filePath for your custom map>
 
 
-##Currently
+##Game option
 
-The game is currently only playable by 4 human players on the same PC, on a turn by turn basic.
-Some improvements are planned on the information part, like a easy way to provide a reminder on the touchs used by the game and an item descriptor.
-The main functions of the game are created and worked as intended.
+1) Local Game:
+You can play solo or with friends on the same computer, on a turn by turn basis. If not enough players are available, bots will complete the line up.
+
+2) Start a server:
+Set up and start your server, where you can choose the map available for your futur game.
+Be aware that max number of player is the number of needed player to be connected on your server to launch the game.
+
+3) Join a server:
+To join a server and play with your friend, the game will ask you to provide the IP adress of the server, and your pseudonym. When all players are connected, the game can start.
+
+-------------
+Options available on both local and server side:
+
+* Maps provided by the game are for 2 or 4 players max. It is possible to choose to generate a random map for both number of players if you wish in the selection menu.
+
+However, it is possible to load your own map to play on CasseBrick.
+Be sure that it respects the following format:
+
+1 <-- nb of starting bombs available per player
+9 5 <-- nb of columns 'space' nb of rows
+xxxxxxxxx <-- the map (representated by the previous informations) 
+xp mmmmmx
+x xmxmx x
+xmmmmm px
+xxxxxxxxx <-- the last character has to be the EOF, no more line after that.
+
+Load it by adding it s filePath as argument when executing the game.
+ie: ./CasseBrick ./AwesomeMap.txt
+Be aware that the number of p (players) on the map will define the maximum number of players.
+
+* At the end of a map, when 1 or 0 players are alive, you will have the option to continue and play another map at random in the initial map selection. If more that one map has been selected, the next map will be different.
+In server mode, all players have to select 'continue' else the server will shut down and disconnect the players.
+
+* Game is compatible windows and linux simultaneously on server mode.
+
+##Game Structure
 
 ####Players
 Each players are referenced by their number on the map.
@@ -46,7 +79,7 @@ Here is the list of the bricks building our game. The main frame is listed here:
 Each bombs are represented by a B. When a player launchs a bomb, it appears at the same coordonate as the player (under his foots), so be aware of it when you move as it migh block you later if you dont considerate it.
 A bomb has a timer of 3 turns, bombs explode at the end of the player turn ! As there are no apparent timer shown and as a bomb can make another one exploded if it is in its explosion range, chain reactions must be expected!
 
-A timer has been made to see the explosion and the map updated after that. So be patient as wonderfull items might await for you once walls are broken !
+A timer has been made to see the explosion and the map updated after that. So be patient as wonderful items might await for you once walls are broken !
 
 ####Items
 Following is a brief descriptive list for the items dropped randomly after a wall is destroyed:
@@ -61,13 +94,12 @@ Following is a brief descriptive list for the items dropped randomly after a wal
 	'@': Life. Life counter go down each time a player is touched by an explosion. When timer is at 0, the player is dead and cannot play anymore on this map.
 	'&': Fire MAX. Explosion range go to the max (max 9)
 
-A "player inventory" is displayed to make it easily readable for the current player.
-
 ####Actions
 A player turn ends when he makes an action:
 	- launching a bomb (touch B)
 	- waiting (touch W)
 	- moving (touch Z: North, S: South, Q: West, D: East) Be carrefull as these controls where made for french keyboard !
+Player turns finished only once a valid action has been done. 
 	
 When one or no more player are alive at the end of a turn, the game is over.
 
@@ -75,13 +107,5 @@ When one or no more player are alive at the end of a turn, the game is over.
 ##Team organization
 To make our organization smoother, we decided to use Git as a VCS, so we could keep track of each game features implemented, and make sure we could exhange and integrate each other codes efficiently.
 One of our goals during this project was to experiment a more company oriented set up (IDE and VCS).
-
-	
-	
-	
-	
-	
-
-
 
 

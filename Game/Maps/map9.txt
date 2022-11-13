@@ -1,0 +1,14 @@
+2
+21 12
+xxxxxxxxxxxxxxxxxxxxx
+xp mmmmmm mmmm m m px
+x mmmmm  mmmmm m  m x
+x m  mm  m  mmmmm mmx
+xmmmmmm  mmmmmmm mmmx
+xmmmmm m m mmmmm mm x
+xm m  mmmmmm m   m  x
+x   mmmm m mm   m  mx
+x    mm m  mmmmmmmmmx
+x m mm mm  mm mm mm x
+xp  mmmmm   m  mmm px
+xxxxxxxxxxxxxxxxxxxxx

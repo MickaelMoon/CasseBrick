@@ -3,6 +3,7 @@
 #ifndef MAP_H
 #define MAP_H
 
+void generateProceduralMap(int nbPlayers);
 void afficherSerializedMap(char * map);
 char * serializeMap(Map * map);
 void afficherMap(Map * map);

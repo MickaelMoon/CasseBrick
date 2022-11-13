@@ -39,7 +39,7 @@ typedef struct in_addr IN_ADDR;
 
 static void init(void);
 static void end(void);
-static void app(void);
+static void app(char * mapProvided);
 static int init_connection(const int MAX_CLIENTS);
 static void end_connection(int sock);
 static int read_client(SOCKET sock, char *buffer);
@@ -48,7 +48,7 @@ void sendAll(Player **clients, int actual, const char *message);
 static void send_message_to_all_clients(Client *clients, Client client, int actual, const char *buffer, char from_server);
 static void remove_client(Client *clients, int to_remove, int *actual);
 static void clear_clients(Client *clients, int actual);
-int launchServer();
+int launchServer(char * mapProvided);
 
 
 #endif /* guard */

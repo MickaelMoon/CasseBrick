@@ -38,9 +38,9 @@ static void end(void)
    #endif
 }
 
-static void app(void)
+static void app(char * mapProvided)
 {  
-   Game *game = initGame(1);
+   Game *game = initGame(1, mapProvided);
 
    int MAX_CLIENTS = game->nbMaxPlayer;
    // sock = socket serveur
@@ -172,6 +172,12 @@ static void app(void)
                previousFilePath = randomfilePath;
             }
             char *filePath = game->filePathMapChoosen[randomfilePath];
+
+            if (filePath[10] == '4'){
+                generateProceduralMap(2);
+            } else if (filePath[10] == '9'){
+                generateProceduralMap(4);
+            }
 
             Map * map = initMap(filePath, multiplayer, 0);
             game->currentMap = map;
@@ -491,10 +497,10 @@ static void write_client(SOCKET sock, const char *buffer)
    }
 }
 
-int launchServer()
+int launchServer(char * mapProvided)
 {
    init();
-   app();
+   app(mapProvided);
    end();
    sleep(3);
 

@@ -8,7 +8,6 @@
 
 
 char botNextMove(Map *map, Player *player){
-    printf("test map: %c \n",map->tab[0][22]);
 
     srand(time(NULL));
     int nbChoices = 0;

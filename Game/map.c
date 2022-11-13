@@ -1,8 +1,85 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 #include <locale.h>
 #include <string.h>
 #include "struct.h"
+
+void generateProceduralMap(int nbPlayers){
+    srand(time(NULL));
+    int rows = (rand()%(12))+3*nbPlayers;
+    int columns = rand()%(20)+3*nbPlayers;
+    char tab[rows][columns];
+    for (int y = 0; y < rows; y++){
+        for (int x = 0; x < columns; x++){
+            if (x == 0 || x == columns-1 || y == 0 || y == rows-1){
+                tab[y][x] = 'x';
+            } else {
+                int choice = rand()%3;
+                if (choice == 0){
+                    tab[y][x] = ' ';
+                } else {
+                    tab[y][x] = 'm';
+                }
+            }
+        }
+    }
+    switch(nbPlayers){
+        case 4:
+            tab[1][columns-2] = 'p';
+            tab[2][columns-2] = ' ';
+            tab[1][columns-3] = ' ';
+
+            tab[rows-2][1] = 'p';
+            tab[rows-3][1] = ' ';
+            tab[rows-2][2] = ' ';
+
+            tab[1][1] = 'p';
+            tab[1][2] = ' ';
+            tab[2][1] = ' ';
+
+            tab[rows-2][columns-2] = 'p';
+            tab[rows-3][columns-2] = ' ';
+            tab[rows-2][columns-3] = ' ';
+
+            break;
+        case 2:
+            tab[1][1] = 'p';
+            tab[1][2] = ' ';
+            tab[2][1] = ' ';
+
+            tab[rows-2][columns-2] = 'p';
+            tab[rows-3][columns-2] = ' ';
+            tab[rows-2][columns-3] = ' ';
+            break;
+    }
+
+    FILE *f;
+    int bombInit;
+    if (nbPlayers == 2){
+        bombInit = 1;
+        f = fopen("./Maps/map4.txt","w+");
+    } else {
+        bombInit = 2;
+        f = fopen("./Maps/map9.txt","w+");
+    }
+    if (f == NULL){
+        printf("Erreur ouverture fichier");
+        exit(1);
+    }
+    fputc(bombInit+'0',f);
+    fputc('\n',f);
+    fprintf(f,"%d %d",columns,rows);
+    fputc('\n',f);
+    for (int y = 0; y < rows; y++){
+        for (int x = 0; x < columns; x++){
+            fputc(tab[y][x],f);
+        }
+        fputc('\n',f);
+    }
+
+    fclose(f);
+}
 
 void afficherSerializedMap(char * map){
     setlocale(LC_ALL, "");

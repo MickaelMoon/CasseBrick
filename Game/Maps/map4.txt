@@ -1,11 +1,10 @@
 1
-10 9
-mmmmmmmmmm
-mm  mm  mm
-m p mm p m
-m  mmmm  m
-mmmmmmmmmm
-m  mmmm  m
-m p mm p m
-mm  mm  mm
-mmmmmmmmmm
+18 8
+xxxxxxxxxxxxxxxxxx
+xp  m mmmm mmm  mx
+x  m mmmm mm mmmmx
+xmm mm mmmmmmmm  x
+xm m m m   m mmm x
+xm  m m m m m mm x
+xm  mmm mmm     px
+xxxxxxxxxxxxxxxxxx

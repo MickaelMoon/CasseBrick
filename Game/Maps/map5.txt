@@ -1,17 +1,11 @@
-3
-15 15
-     xxxxx     
-     x p x     
-     xm mx     
-     xmmmx     
-     xmmmx     
-xxxxxxmmmxxxxxx
-x mmmmxmxmmmm x
-xp mmmm*mmmm px
-x mmmmxmxmmmm x
-xxxxxxmmmxxxxxx
-     xmmmx     
-     xmmmx     
-     xm mx     
-     x p x     
-     xxxxx     
+1
+10 9
+mmmmmmmmmm
+mm  mm  mm
+m p mm p m
+m  mmmm  m
+mmmmmmmmmm
+m  mmmm  m
+m p mm p m
+mm  mm  mm
+mmmmmmmmmm

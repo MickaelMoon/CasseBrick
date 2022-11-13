@@ -5,7 +5,7 @@
 #define SOLO 0
 #define MULTI 1
 
-Game * initGame(int mode);
-void launchGame();
+Game * initGame(int nbHumanPlayers, char * mapProvided);
+void launchGame(int nbHumanPlayers, char * mapProvided);
 
 #endif
