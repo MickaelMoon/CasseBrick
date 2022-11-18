@@ -2,6 +2,15 @@
 #define STRUCT_H
 
 typedef enum {
+    BLUE = 'blue',
+    RED = 'red',
+    GREEN = 'green',
+    YELLOW = 'yellow',
+    PURPLE = 'purple',
+    CYAN = 'cyan',
+} Color;
+
+typedef enum {
     isDead = 0,
     isPlaying = 1,
     isBot = 2,
@@ -29,6 +38,7 @@ typedef struct {
     int heart; //Max 1 per map
     int life; //No limit
     int socket;
+    Color color;
 } Player;
 
 typedef struct {

@@ -93,11 +93,10 @@ static void app(const char *address, const char *name)
          if (buffer[0] == ' ' || buffer[0] == 'x' || buffer[0] == 'm') {
             #ifdef WIN32
             system("cls");
-            printf("%s",buffer);
             #else
             system("clear");
-            afficherSerializedMap(buffer);
             #endif
+            afficherSerializedMap(buffer);
          }
          else {
             if (buffer[0] == 'D' || buffer[0] == 'M'){

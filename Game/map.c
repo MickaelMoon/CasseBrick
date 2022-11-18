@@ -4,6 +4,11 @@
 #include <locale.h>
 #include <string.h>
 #include "struct.h"
+#include "color.h"
+
+#ifdef WIN32
+#elif defined (linux)
+#endif
 
 void generateProceduralMap(int nbPlayers){
     srand(time(NULL));
@@ -83,6 +88,42 @@ void generateProceduralMap(int nbPlayers){
 
 void afficherSerializedMap(char * map){
     setlocale(LC_ALL, "");
+    #ifdef WIN32
+    for (int i = 0; i < strlen(map); i++) {
+        if (map[i] == 'B' || map[i] == 'F'){
+                red();
+            }else {
+                char tile = map[i];
+                Color color;
+                if (tile != ' '){
+                    switch(tile){
+                        case '6':
+                            red();
+                            break;
+                        case '3':
+                            yellow();
+                            break;
+                        case '2':
+                            green();
+                            break;
+                        case '1':
+                            blue();
+                            break;
+                        case '4':
+                            purple();
+                            break;
+                        case '5':
+                            cyan();
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            printf("%lc",map[i]);
+            reset();
+        }
+    }
+    #else
     for (int i = 0; i < strlen(map); i++) {
         if (map[i] == 'x'){
             printf("%lc",0x2593);
@@ -109,11 +150,45 @@ void afficherSerializedMap(char * map){
         }else if (map[i] == '&'){
             printf("%lc",0x290A);
         }else if (map[i] == 'B'){
+            red();
             printf("%lc",0x25EF);
-        }else {
+            reset();
+        }else if (map[i] == 'F'){
+                red();
+                printf("%c",'F');
+                reset();
+            }else {
+                char tile = map[i];
+                Color color;
+                if (tile != ' '){
+                    switch(tile){
+                        case '6':
+                            red();
+                            break;
+                        case '3':
+                            yellow();
+                            break;
+                        case '2':
+                            green();
+                            break;
+                        case '1':
+                            blue();
+                            break;
+                        case '4':
+                            purple();
+                            break;
+                        case '5':
+                            cyan();
+                            break;
+                        default:
+                            break;
+                    }
+                }
             printf("%lc",map[i]);
+            reset();
         }
     }
+    #endif
 }
 
 void afficherMap(Map * map){
@@ -129,7 +204,42 @@ void afficherMap(Map * map){
 #ifdef WIN32
     for (int i = 0; i < map->rows; i++){
         for (int j = 0; j < map->columns; j++){
-            printf("%c",map->tab[i][j]);
+            if (map->tab[i][j] == 'B' || map->tab[i][j] == 'F'){
+                red();
+            }else {
+                char tile = map->tab[i][j];
+                Color color;
+                if (tile != ' '){
+                    for (int i = 0; i < map->nbPlayers; i++){
+                        if (map->playerList[i]->token == tile){
+                            color = map->playerList[i]->color;
+                            break;
+                        }
+                    }
+                    switch(color){
+                        case RED:
+                            red();
+                            break;
+                        case YELLOW:
+                            yellow();
+                            break;
+                        case GREEN:
+                            green();
+                            break;
+                        case BLUE:
+                            blue();
+                            break;
+                        case PURPLE:
+                            purple();
+                            break;
+                        case CYAN:
+                            cyan();
+                            break;
+                    }
+                }
+            }
+                printf("%c",map->tab[i][j]);
+                reset();
         }
         printf("\n");
     }
@@ -161,10 +271,46 @@ void afficherMap(Map * map){
             }else if (map->tab[i][j] == '&'){
                 printf("%lc",0x290A);
             }else if (map->tab[i][j] == 'B'){
+                red();
                 printf("%lc",0x25EF);
+                reset();
+            }else if (map->tab[i][j] == 'F'){
+                red();
+                printf("%c",'F');
+                reset();
             }else {
+                char tile = map->tab[i][j];
+                Color color;
+                if (tile != ' '){
+                    for (int i = 0; i < map->nbPlayers; i++){
+                        if (map->playerList[i]->token == tile){
+                            color = map->playerList[i]->color;
+                            break;
+                        }
+                    }
+                    switch(color){
+                        case RED:
+                            red();
+                            break;
+                        case YELLOW:
+                            yellow();
+                            break;
+                        case GREEN:
+                            green();
+                            break;
+                        case BLUE:
+                            blue();
+                            break;
+                        case PURPLE:
+                            purple();
+                            break;
+                        case CYAN:
+                            cyan();
+                            break;
+                    }
+                }
             printf("%lc",map->tab[i][j]);
-
+            reset();
             }
         }
         printf("\n");
@@ -231,17 +377,14 @@ char **initialiseTab(int rows, int columns){
 }
 
 Player * initPlayer(int i){
+    Color colorPanel[] = {BLUE,GREEN,YELLOW,PURPLE,CYAN,RED};
     Player * player = malloc(sizeof (Player));
     player->x = 0; // a updater dans la création de map
     player->y = 0; // a updater dans la création de map
     player->id = i+1;
     player->token = player->id+'0';
     player->status = isPlaying;
-    /*if (i == 0){
-        player->status = isPlaying;
-    } else {
-        player->status = waiting;
-    }*/
+    player->color = colorPanel[i%6];
     player->currentNumberOfBombsLaunched = 0;
     player->bombKick = 0;
     player->firePower = 2;

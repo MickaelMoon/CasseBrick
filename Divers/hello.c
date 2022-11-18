@@ -3,6 +3,8 @@
 #include <stdio.h>
 #include <string.h>
 
+
+
 int main() {
 
     char * buffer = malloc(sizeof(char)*1024);
@@ -16,18 +18,25 @@ int main() {
 
     for (int i = 0; i < 3; i++) {
         for (int j = 0; j < 3; j++) {
-            char cToStr[2];
-            cToStr[0] = tab[i][j];
-            cToStr[1] ='\0';
-            strcat(buffer,cToStr);
-        }
-        char cToStr[2];
-        cToStr[0] = '\n';
-        cToStr[1] ='\0';
-        strcat(buffer,cToStr);
-    }
-    printf("%s",buffer);
 
+        }
+    }
+  red();
+  printf("Hello ");
+  yellow();
+  printf("world\n");
+  blue();
+    printf("world\n");
+    cyan();
+      printf("world\n");
+      black();
+        printf("world\n");
+        green();
+          printf("world\n");
+          purple();
+            printf("world\n");
+
+  reset();
 
     return 0;
 }

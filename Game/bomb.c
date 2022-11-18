@@ -104,7 +104,7 @@ void explosion(Bomb * bomb, Map *map){
     int X = bomb->x;
     int Y = bomb->y;
     removeBomb(bomb, map);
-    map->tab[Y][X] = 'F';
+    map->tab[Y][X] ='F';
     // explosion to the right
     for (int i = X, k = 0; k <= bomb->player->firePower; i++, k++){
         if (i == map->columns){
