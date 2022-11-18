@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include "struct.h"
 #include "map.h"
+#include "item.h"
 #include "../Server/server.h"
 
 
@@ -46,37 +47,6 @@ int poseBomb(Map * map, Player * player){
     updateDangerMap(map);
 
     return 0;
-}
-
-void itemGenerator(Map * map, int x, int y){
-    int r = rand()%100;
-    char item;
-    if (r < 50){
-        item = ' '; //Nothing dropped
-    } else if (r < 55){
-        item = '+'; //Fire Up
-    } else if (r < 60){
-        item = '-'; //Fire down
-    } else if (r < 65){
-        item = 'O'; //Bomb Up
-    } else if (r < 70){
-        item = 'o'; //Bomb Down
-    } else if (r < 75){
-        item = 'P'; //PasseBomb
-    } else if (r < 80){
-        item = 'K'; //KickBomb
-    } else if (r < 85){
-        item = '*'; //Invincibility
-    } else if (r < 90){
-        item = '#'; //Heart
-    } else if (r < 95){
-        item = '@'; //Life
-    } else if (r < 98){
-        item = '&'; //Fire MAX
-    } else {
-        item = ' ';
-    }
-    map->tab[y][x] = item;
 }
 
 void removeBomb(Bomb *bomb, Map * map){
