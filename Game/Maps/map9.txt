@@ -1,18 +1,19 @@
 2
-16 16
-xxxxxxxxxxxxxxxx
-xp mmmmmm     px
-x mmmmm m  mmm x
-xmm m m mm   m x
-xmmmm mm  m m mx
-xmmmmm mm mmmmmx
-xm mmmm   mmmmmx
-x m mm m mmmmmmx
-x mmmmmm m mm  x
-xmmmmm m   mmmmx
-x mmmmm  mmm m x
-xmm mmmmmmm  m x
-xm m mm  mmm mmx
-x m mm mmmmmmm x
-xp   mmmm m   px
-xxxxxxxxxxxxxxxx
+12 17
+xxxxxxxxxxxx
+xp mmmmmm px
+x   mmm m  x
+xmm  mmm mmx
+xm   mmmm mx
+xm mmmm  mmx
+xmm mmmmmm x
+xmmmmmmmmmmx
+xmmmmmm mmmx
+x mmmmm mmmx
+xmmmmmm m mx
+x mmmmmmmmmx
+xmmm m mmm x
+xmmm m mmm x
+x m mmmm m x
+xp mm mmm px
+xxxxxxxxxxxx

@@ -24,7 +24,10 @@ Please follow the next steps:
 - navigate to the root of the project named CasseBrick
 - execute the command make
 - execute the file:
+	linux:
 	./CasseBrick <opt: filePath for your custom map>
+	windows:
+	start CasseBrick.exe <opt: filePath for your custom map>
 
 
 ##Game option
