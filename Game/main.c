@@ -15,7 +15,7 @@ int main(int argc, char **argv) {
     } while (startingChoice != 1 && startingChoice != 2 && startingChoice != 3);
 
     switch(startingChoice){
-        case 1:
+        case 1: {
         int nbHumanPlayers = 0;
             do{
                 printf("How many human players ?\n");
@@ -26,11 +26,12 @@ int main(int argc, char **argv) {
             } while (nbHumanPlayers != 1 && nbHumanPlayers != 2 && nbHumanPlayers != 3 && nbHumanPlayers != 4);
             launchGame(nbHumanPlayers,argv[1]);
             break;
+        }
         case 2:
             // voir parameters
             launchServer(argv[1]);
             break;
-        case 3:
+        case 3:{
             char **info = malloc(sizeof(char*)*2);
             info[0] = malloc(sizeof(char)*20);
             info[1] = malloc(sizeof(char)*20);
@@ -45,6 +46,7 @@ int main(int argc, char **argv) {
             free(info[1]);
             free(info);
             break;
+        }
     }
 
     return 0;

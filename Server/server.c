@@ -14,6 +14,17 @@
 #include "../Game/game.h"
 #include "../Game/map.h"
 
+static void init(void);
+static void end(void);
+static void app(char * mapProvided);
+static int init_connection(const int MAX_CLIENTS);
+static void end_connection(int sock);
+static int read_client(SOCKET sock, char *buffer);
+static void write_client(SOCKET sock, const char *buffer);
+static void send_message_to_all_clients(Client *clients, Client client, int actual, const char *buffer, char from_server);
+static void remove_client(Client *clients, int to_remove, int *actual);
+static void clear_clients(Client *clients, int actual);
+
 #ifdef WIN32
 #elif defined (linux)
 #endif
@@ -101,7 +112,7 @@ static void app(char * mapProvided)
       {
          /* new client */
          SOCKADDR_IN csin = { 0 };
-         size_t sinsize = sizeof csin;
+         socklen_t sinsize = sizeof csin;
          if (actual == MAX_CLIENTS){
             int csock = accept(sock, (SOCKADDR *)&csin, &sinsize);
             write_client(csock, "Server full.\n");
@@ -185,7 +196,7 @@ static void app(char * mapProvided)
             char buffer1[1024];
 
             for (int i = 0; i < MAX_CLIENTS; i++){
-               char temp[60];
+               char temp[1100];
                map->playerList[i]->socket = clients[i].sock;
                clients[i].playerToken = map->playerList[i]->token;
                sprintf(temp,"Player %c is %s.\n",clients[i].playerToken, clients[i].name);

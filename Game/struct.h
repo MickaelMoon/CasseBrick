@@ -2,12 +2,12 @@
 #define STRUCT_H
 
 typedef enum {
-    BLUE = 'blue',
-    RED = 'red',
-    GREEN = 'green',
-    YELLOW = 'yellow',
-    PURPLE = 'purple',
-    CYAN = 'cyan',
+    BLUE = 0,
+    RED = 1,
+    GREEN = 2,
+    YELLOW = 3,
+    PURPLE = 4,
+    CYAN = 5,
 } Color;
 
 typedef enum {

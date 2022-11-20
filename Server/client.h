@@ -1,5 +1,5 @@
-#ifndef CLIENT_H
-#define CLIENT_H
+#ifndef SERVER_CLIENT_H
+#define SERVER_CLIENT_H
 
 #include "server.h"
 

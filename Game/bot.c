@@ -6,6 +6,28 @@
 #include "struct.h"
 #include "collisionChecker.h"
 
+int suroundingTileChecker(int x, int y, Map *map){
+    switch (map->tab[y][x]){
+        case 'x':
+        case 'm':
+        case '1':
+        case '2':
+        case '3':
+        case '4':
+            return 1;
+            break;
+        case 'B':
+            return 2;
+            break;
+        default:
+            if (map->dangerMap[y][x] == 1){
+                return -1;
+                break;
+            }
+            return 0;
+            break;
+    }
+}
 
 char botNextMove(Map *map, Player *player){
 
@@ -123,27 +145,4 @@ char botNextMove(Map *map, Player *player){
     } 
 
     return finalMove;
-}
-
-int suroundingTileChecker(int x, int y, Map *map){
-    switch (map->tab[y][x]){
-        case 'x':
-        case 'm':
-        case '1':
-        case '2':
-        case '3':
-        case '4':
-            return 1;
-            break;
-        case 'B':
-            return 2;
-            break;
-        default:
-            if (map->dangerMap[y][x] == 1){
-                return -1;
-                break;
-            }
-            return 0;
-            break;
-    }
 }

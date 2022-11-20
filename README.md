@@ -27,7 +27,7 @@ Please follow the next steps:
 	linux:
 	./CasseBrick <opt: filePath for your custom map>
 	windows:
-	start CasseBrick.exe <opt: filePath for your custom map>
+	CasseBrick.exe <opt: filePath for your custom map>
 
 
 ##Game option
